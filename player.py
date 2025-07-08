@@ -67,6 +67,10 @@ class Player:
             self.ammo_capacity_bought = True
             return True
 
+        elif upgrade_name == "Aid Kit":
+            self.health += 50
+            return True
+
         return False
 
 

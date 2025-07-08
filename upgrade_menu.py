@@ -25,7 +25,7 @@ class UpgradeMenu:
             {"name": "Health", "price": 250, "description": "+50 HP"},
             {"name": "Rate of fire", "price": 300, "description": "-25% delay"},
             {"name": "Ammo capacity", "price": 300, "description": "+5 bullets"},
-            {"name": "Micro-Uzi", "price": 800, "description": "Funny thing"},
+            {"name": "Aid Kit", "price": 200, "description": "+50 hp"},
             {"name": "Shotgun", "price": 1100, "description": "Good at close range"},
             {"name": "M1 garand", "price": 1700, "description": "Killer thing"},
             {"name": "M4", "price": 1400, "description": "Good one"}
@@ -67,9 +67,8 @@ class UpgradeMenu:
                 button.check_hover(mouse_pos)
                 upgrade_name = self.upgrades[i]["name"]
 
-                # Особый случай для Ammo capacity
                 if upgrade_name == "Ammo capacity" and self.player.ammo_capacity_bought:
-                    button.color = (50, 50, 50)  # Серый цвет
+                    button.color = (50, 50, 50)
                     button.hover_color = (50, 50, 50)
                     continue
                 else:

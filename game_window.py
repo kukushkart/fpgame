@@ -76,12 +76,10 @@ class GameWindow:
             self.exit_button.check_hover(mouse_pos)
 
             if self.new_game_button.is_clicked(mouse_pos, mouse_click):
-                # Добавляем запись перед сбросом игры
                 records = RecordsScreen(self.screen)
                 records.add_record(self.player_name, self.day, self.wave, self.money)
                 self.reset_game()
             elif self.exit_button.is_clicked(mouse_pos, mouse_click):
-                # Добавляем запись перед выходом
                 records = RecordsScreen(self.screen)
                 records.add_record(self.player_name, self.day, self.wave, self.money)
                 self.running = False
@@ -214,11 +212,16 @@ class GameWindow:
 
         self.player.draw_bullets(self.screen)
 
-        day_text = self.debug_font.render(f"Day: {self.day} | Wave: {self.wave}", True, WHITE)
-        self.screen.blit(day_text, (SCREEN_WIDTH - day_text.get_width() - 10, 10))
+        day_wave_font = pygame.font.Font(FONT_NAME, 45)
+        day_text = day_wave_font.render(f"Day: {self.day}", True, WHITE)
+        wave_text = day_wave_font.render(f"Wave: {self.wave}", True, WHITE)
 
-        money_text = self.debug_font.render(f"Money: {self.money}$", True, (255, 215, 0))
-        self.screen.blit(money_text, (SCREEN_WIDTH - money_text.get_width() - 10, 40))
+        self.screen.blit(day_text, (SCREEN_WIDTH // 2 - day_text.get_width() // 2, 20))
+        self.screen.blit(wave_text, (SCREEN_WIDTH // 2 - wave_text.get_width() // 2, 90))
+
+        money_font = pygame.font.Font(FONT_NAME, 35)
+        money_text = money_font.render(f"Money: {self.money}$", True, (255, 215, 0))
+        self.screen.blit(money_text, (SCREEN_WIDTH - money_text.get_width() - 20, 20))
 
         if self.game_over:
             overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
