@@ -1,15 +1,14 @@
 import pygame
 from config import *
 
-
 class Bullet:
     def __init__(self, x, y, direction):
         self.speed = 10
-        self.damage = 10
+        self.damage = 5      # <-- было 10, стало 5
         self.direction = direction
 
         try:
-            self.image = pygame.image.load("assets/images/bullet.png").convert_alpha()
+            self.image = pygame.image.load(BULLET_PATH).convert_alpha()
             self.image = pygame.transform.scale(self.image, (30, 15))
             if direction == -1:
                 self.image = pygame.transform.flip(self.image, True, False)
