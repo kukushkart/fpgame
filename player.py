@@ -29,7 +29,7 @@ class Player:
             self.rect.y += self.speed
 
         self.rect.left = max(0, self.rect.left)
-        self.rect.right = min(SCREEN_WIDTH, self.rect.right)
+        self.rect.right = min(830, self.rect.right)
         self.rect.top = max(458, self.rect.top)
         self.rect.bottom = min(SCREEN_HEIGHT, self.rect.bottom)
 
