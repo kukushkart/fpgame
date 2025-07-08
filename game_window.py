@@ -5,6 +5,36 @@ from zombies import Zombie
 from pause_menu import PauseMenu
 from ui import Button
 from upgrade_menu import UpgradeMenu
+import random
+import math
+from pygame.math import Vector2
+
+class BloodParticle:
+    def __init__(self, pos):
+        # pos — кортеж (x, y), центр всплеска
+        self.pos = Vector2(pos)
+        # случайное направление
+        angle = random.uniform(0, math.tau)
+        speed = random.uniform(2, 5)
+        self.vel = Vector2(math.cos(angle), math.sin(angle)) * speed
+        # время жизни
+        self.life = random.uniform(0.5, 0.8)
+        self.initial_life = self.life
+        # размер пятнышка
+        self.radius = random.randint(2, 4)
+
+    def update(self, dt):
+        self.life -= dt
+        self.pos += self.vel
+
+    def draw(self, surface):
+        if self.life <= 0:
+            return
+        alpha = max(0, int(255 * (self.life / self.initial_life)))
+        surf = pygame.Surface((self.radius*2, self.radius*2), pygame.SRCALPHA)
+        color = (200, 0, 0, alpha)
+        pygame.draw.circle(surf, color, (self.radius, self.radius), self.radius)
+        surface.blit(surf, (self.pos.x - self.radius, self.pos.y - self.radius))
 
 
 class GameWindow:
@@ -25,6 +55,8 @@ class GameWindow:
         self.zombies = []
         self.zombie_spawn_timer = 0
         self.damage_timer = 0.0
+
+        self.particles = []
 
         self.debug_font = pygame.font.Font(None, 30)
 
@@ -156,12 +188,21 @@ class GameWindow:
         for bullet in self.player.bullets[:]:
             for z in self.zombies[:]:
                 if bullet.rect.colliderect(z.rect):
+                    for _ in range(12):
+                        self.particles.append(BloodParticle(z.rect.center))
                     z.health -= bullet.damage
                     self.player.bullets.remove(bullet)
                     if z.health <= 0:
                         self.zombies.remove(z)
                         self.money += 10
                     break
+
+    def update_particles(self, dt):
+        for p in self.particles[:]:
+            p.update(dt)
+            if p.life <= 0:
+                self.particles.remove(p)
+
 
     def update(self):
         if not self.game_paused and not self.game_over:
@@ -232,6 +273,9 @@ class GameWindow:
             self.new_game_button.draw(self.screen)
             self.exit_button.draw(self.screen)
 
+            for p in self.particles:
+                p.draw(self.screen)
+
         pygame.display.flip()
 
     def run(self):
@@ -247,6 +291,8 @@ class GameWindow:
                     self.spawn_and_update_zombies()
                     self.handle_bullet_zombie_collisions()
                     self.handle_collisions(dt)
+                    self.handle_bullet_zombie_collisions()
+                    self.update_particles(dt)
             else:
                 if not self.show_upgrade_menu():
                     break
