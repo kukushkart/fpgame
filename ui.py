@@ -15,6 +15,8 @@ class Button:
         # (border_radius = 10 отвечает за это) с выбранным цветом
         pygame.draw.rect(screen, BLACK, self.rect, 2, border_radius = 10) # Рисует чёрную обводку в 2 пикселя
 
+        if not pygame.font.get_init():
+            pygame.font.init()
         font = pygame.font.Font(FONT_NAME, FONT_SIZE - 10) # Имя и размер шрифта
         text_surface = font.render(self.text, True, WHITE) # Белый текст
         shadow_surface = font.render(self.text, True, BLACK) # Черная тень
@@ -37,6 +39,8 @@ class Button:
 
 
 def draw_menu(screen, buttons): # Отрисовка меню
+    if not pygame.font.get_init():
+        pygame.font.init()
     title_font = pygame.font.Font(FONT_NAME, FONT_SIZE + 20) # Устанавливаем шрифт и размер
     title_text = title_font.render("Zombie Survival", True, WHITE) # Записываем отрисовку текста
     title_shadow = title_font.render("Zombie Survival", True, BLACK) # Записываем отрисовку тени

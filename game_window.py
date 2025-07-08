@@ -255,4 +255,3 @@ class GameWindow:
                 self.paused = False
 
             self.draw()
-        pygame.quit()
