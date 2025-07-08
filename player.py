@@ -18,6 +18,8 @@ class Player:
 
         self.speed = 4
 
+        self.health = 100
+
     def update(self, keys):
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             self.rect.x -= self.speed
