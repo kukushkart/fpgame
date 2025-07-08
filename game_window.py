@@ -123,12 +123,13 @@ class GameWindow:
 
     def spawn_and_update_zombies(self):
         self.zombie_spawn_timer += 1
-        if self.zombie_spawn_timer >= 120:
+        if self.zombie_spawn_timer >= 60:
             self.zombie_spawn_timer = 0
             self.zombies.append(Zombie(self.screen))
 
+        player_pos = self.player.rect.center
         for z in self.zombies[:]:
-            z.move()
+            z.move(player_pos)
             if z.is_off_screen():
                 self.zombies.remove(z)
 
