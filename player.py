@@ -20,7 +20,7 @@ class Player:
 
         self.bullets = []
         self.shoot_cooldown = 0
-        self.shoot_delay = 10  # Уменьшаем задержку для более частой стрельбы
+        self.shoot_delay = 10  
         self.facing_right = True
 
     def update(self, keys):
