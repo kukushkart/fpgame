@@ -131,12 +131,13 @@ class GameWindow:
 
     def spawn_and_update_zombies(self):
         self.zombie_spawn_timer += 1
-        if self.zombie_spawn_timer >= 120:
+        if self.zombie_spawn_timer >= 60:
             self.zombie_spawn_timer = 0
             self.zombies.append(Zombie(self.screen))
 
+        player_pos = self.player.rect.center
         for z in self.zombies[:]:
-            z.move()
+            z.move(player_pos)
             if z.is_off_screen():
                 self.zombies.remove(z)
 
@@ -144,15 +145,18 @@ class GameWindow:
         if self.game_over:
             return
 
+        # Проверяем, сталкивается ли игрок с каким-либо зомби
         collided = any(self.player.rect.colliderect(z.rect) for z in self.zombies)
+
         if collided:
-            self.damage_timer += dt
-            if self.damage_timer >= 2.0:
-                self.damage_timer = 0.0
+            if self.damage_timer <= 0.0:
                 self.player.health -= 5
                 if self.player.health <= 0:
                     self.player.health = 0
                     self.game_over = True
+                self.damage_timer = 1.5
+            else:
+                self.damage_timer -= dt
         else:
             self.damage_timer = 0.0
 
