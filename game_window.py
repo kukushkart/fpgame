@@ -20,7 +20,6 @@ class GameWindow:
 
         # таймер урона от зомби
         self.damage_timer = 0.0
-
         self.game_paused = False
 
     def load_background(self):
@@ -81,10 +80,6 @@ class GameWindow:
                     self.game_over = True
 
     def handle_bullet_zombie_collisions(self):
-        """
-        При попадании пули в зомби: снимаем здоровье,
-        пуля всегда исчезает, зомби удаляем только если health ≤ 0.
-        """
         for bullet in self.player.bullets[:]:
             for z in self.zombies[:]:
                 if bullet.rect.colliderect(z.rect):

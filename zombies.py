@@ -25,7 +25,7 @@ class Zombie:
         self.rect.x = SCREEN_WIDTH
         self.rect.y = random.randint(self.VERTICAL_MIN, SCREEN_HEIGHT - self.size)
 
-        self.speed = random.randint(1, 3)
+        self.speed = random.randint(1, 2)
         self.direction = random.choice([-1, 0, 1])  # -1 вверх, 0 прямо, 1 вниз
 
         self.health = 50     # <-- добавлено здоровье
