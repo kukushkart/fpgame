@@ -1,0 +1,31 @@
+import pygame
+from config import *
+
+
+class Bullet:
+    def __init__(self, x, y, direction):
+        self.speed = 10
+        self.damage = 10
+        self.direction = direction
+
+        try:
+            self.image = pygame.image.load("assets/images/bullet.png").convert_alpha()
+            self.image = pygame.transform.scale(self.image, (30, 15))
+            if direction == -1:
+                self.image = pygame.transform.flip(self.image, True, False)
+        except:
+            self.image = pygame.Surface((30, 10), pygame.SRCALPHA)
+            pygame.draw.ellipse(self.image, (255, 215, 0), (0, 0, 30, 10))
+
+        self.rect = self.image.get_rect()
+        self.rect.midleft = (x - 22 if direction == 1 else x, y - 28)
+
+    def update(self):
+        self.rect.x += self.speed * self.direction
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
+
+    def is_off_screen(self):
+        return (self.rect.right < 0 if self.direction == -1
+                else self.rect.left > SCREEN_WIDTH)

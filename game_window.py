@@ -2,6 +2,8 @@ import pygame
 from config import *
 from player import Player
 from zombies import Zombie
+from pause_menu import PauseMenu
+
 
 class GameWindow:
     def __init__(self, screen):
@@ -20,12 +22,16 @@ class GameWindow:
         # таймер урона
         self.damage_timer = 0.0
 
+        self.debug_font = pygame.font.Font(None, 30)
+
+        self.game_paused = False
+
     def load_background(self):
         try:
             bg = pygame.image.load(GAME_BG_IMAGE_PATH).convert()
             return pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
         except:
-            print("Invalid attempt of downloading bg. Using standart bg")
+            print("Invalid bg download attempt. Using standart bg")
             bg = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
             bg.fill((50, 70, 90))
             pygame.draw.rect(bg, (80, 100, 60), (0, SCREEN_HEIGHT - 50, SCREEN_WIDTH, 50))
@@ -39,6 +45,23 @@ class GameWindow:
                 if event.key == pygame.K_ESCAPE:
                     # при Game Over тоже закрываем
                     self.running = False
+                if event.key == pygame.K_p:
+                    self.toggle_pause()
+
+    def toggle_pause(self):
+        self.game_paused = not self.game_paused
+
+    def handle_pause(self):
+        if self.game_paused:
+            pause_menu = PauseMenu(self.screen)
+            result = pause_menu.run(self.background, self.player)
+
+            if result == "quit":
+                return False
+            elif result == "resume":
+                self.game_paused = False
+
+        return True
 
     def spawn_and_update_zombies(self):
         # спавн раз в секунду (60 фреймов)
@@ -73,11 +96,14 @@ class GameWindow:
             pass
 
     def update(self):
-        keys = pygame.key.get_pressed()
-        self.player.update(keys)
+        if not self.game_paused:
+            keys = pygame.key.get_pressed()
+            self.player.update(keys)
+            self.player.update_bullets()
 
     def draw(self):
         self.screen.blit(self.background, (0, 0))
+
         self.player.draw(self.screen)
 
         for z in self.zombies:
@@ -97,6 +123,7 @@ class GameWindow:
             x = SCREEN_WIDTH // 2  - go_surf.get_width()  // 2
             y = SCREEN_HEIGHT // 2 - go_surf.get_height() // 2
             self.screen.blit(go_surf, (x, y))
+        self.player.draw_bullets(self.screen)
 
         pygame.display.flip()
 
@@ -106,6 +133,11 @@ class GameWindow:
             dt = self.clock.tick(60) / 1000.0
 
             self.handle_events()
+
+            if not self.handle_pause():
+                break
+
+            self.update()
 
             if not self.game_over:
                 self.update()

@@ -25,3 +25,5 @@ PLAYER_IMAGE_PATH  = "assets/images/player.png"
 ZOMBIE_IMAGE_PATH  = "assets/images/zombie.png"
 
 ZOMBIE_SIZE = 100
+
+BULLET_PATH = "assets/images/bullet.png"
