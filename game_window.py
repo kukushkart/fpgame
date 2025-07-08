@@ -15,6 +15,7 @@ class GameWindow:
         self.clock = pygame.time.Clock()
         self.running = True
         self.game_over = False
+        self.player = Player()
 
         self.day = 1
         self.wave = 1
@@ -86,20 +87,14 @@ class GameWindow:
                 self.running = False
 
     def show_upgrade_menu(self):
-        menu = UpgradeMenu(self.screen, self.money)
+        menu = UpgradeMenu(self.screen, self.money, self.player)
         result = menu.run()
+        self.money = menu.money
 
         self.money = menu.money
 
         if result == "quit":
             return False
-        elif result == "continue":
-            self.day += 1
-            self.wave = 1
-            return True
-        elif result == "resume":
-            return True
-
         return True
 
     def toggle_pause(self):

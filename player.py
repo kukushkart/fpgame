@@ -13,24 +13,62 @@ class Player:
 
         self.image = pygame.transform.smoothscale(self.original_image, (150, 150))
         self.rect = self.image.get_rect()
-
         self.rect.midbottom = (SCREEN_WIDTH // 2, SCREEN_HEIGHT - 20)
 
-        self.speed = 4
+        self.base_speed = 4
+        self.speed = self.base_speed
 
-        self.max_health = 100
+        self.base_damage = 10
+        self.damage = self.base_damage
+
+        self.base_max_health = 100
+        self.max_health = self.base_max_health
         self.health = self.max_health
 
-        self.bullets = []
+        self.base_shoot_delay = 20
+        self.shoot_delay = self.base_shoot_delay
         self.shoot_cooldown = 0
-        self.shoot_delay = 20
-        self.facing_right = True
 
-        self.magazine_size = 30
-        self.current_ammo = self.magazine_size
-        self.reload_time = 2.0
+        self.base_reload_time = 2.0
+        self.reload_time = self.base_reload_time
         self.reload_timer = 0.0
         self.is_reloading = False
+
+        self.base_magazine_size = 30
+        self.magazine_size = self.base_magazine_size
+        self.current_ammo = self.magazine_size
+
+        self.facing_right = True
+        self.bullets = []
+
+        self.ammo_capacity_bought = False
+
+    def apply_upgrade(self, upgrade_name):
+        if upgrade_name == "Strength":
+            self.damage += 5
+            return True
+
+        elif upgrade_name == "Speed":
+            self.speed += 5
+            return True
+
+        elif upgrade_name == "Health":
+            self.max_health += 5
+            self.health += 5
+            return True
+
+        elif upgrade_name == "Rate of fire":
+            self.shoot_delay = max(10, self.shoot_delay - 5)
+            return True
+
+        elif upgrade_name == "Ammo capacity" and not self.ammo_capacity_bought:
+            self.magazine_size += 15
+            self.current_ammo = self.magazine_size
+            self.ammo_capacity_bought = True
+            return True
+
+        return False
+
 
     def update(self, keys):
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
@@ -65,13 +103,13 @@ class Player:
         if self.current_ammo > 0:
             direction = 1 if self.facing_right else -1
             x = self.rect.right if self.facing_right else self.rect.left
-            self.bullets.append(Bullet(x, self.rect.centery, direction))
+            self.bullets.append(Bullet(x, self.rect.centery, direction, self.damage))
             self.current_ammo -= 1
             self.shoot_cooldown = self.shoot_delay
 
             if self.current_ammo == 0:
                 self.start_reload()
-    
+
     def start_reload(self):
         self.is_reloading = True
         self.reload_timer = self.reload_time

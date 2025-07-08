@@ -4,9 +4,10 @@ from ui import Button
 
 
 class UpgradeMenu:
-    def __init__(self, screen, money):
+    def __init__(self, screen, money, player):
         self.screen = screen
         self.money = money
+        self.player = player
         self.clock = pygame.time.Clock()
         self.font_large = pygame.font.Font(FONT_NAME, FONT_SIZE)
         self.font_medium = pygame.font.Font(FONT_NAME, FONT_SIZE - 15)
@@ -60,14 +61,25 @@ class UpgradeMenu:
 
             self.continue_button.check_hover(mouse_pos)
             if self.continue_button.is_clicked(mouse_pos, mouse_click):
-                return "continue"
+                return "resume"
 
             for i, button in enumerate(self.upgrade_buttons):
                 button.check_hover(mouse_pos)
+                upgrade_name = self.upgrades[i]["name"]
+
+                # Особый случай для Ammo capacity
+                if upgrade_name == "Ammo capacity" and self.player.ammo_capacity_bought:
+                    button.color = (50, 50, 50)  # Серый цвет
+                    button.hover_color = (50, 50, 50)
+                    continue
+                else:
+                    button.color = (70, 70, 70)
+                    button.hover_color = (100, 100, 100)
+
                 if button.is_clicked(mouse_pos, mouse_click):
                     if self.money >= self.upgrades[i]["price"]:
-                        self.money -= self.upgrades[i]["price"]
-                        print(f"Already bought: {self.upgrades[i]['name']}")
+                        if self.player.apply_upgrade(upgrade_name):  # Пробуем применить улучшение
+                            self.money -= self.upgrades[i]["price"]
 
             self.screen.fill((30, 30, 40))
 
@@ -97,4 +109,4 @@ class UpgradeMenu:
             pygame.display.flip()
             self.clock.tick(60)
 
-        return "continue"
+        return "resume"
