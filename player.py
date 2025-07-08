@@ -18,12 +18,19 @@ class Player:
 
         self.speed = 4
 
-        self.health = 100
+        self.max_health = 100
+        self.health = self.max_health
 
         self.bullets = []
         self.shoot_cooldown = 0
-        self.shoot_delay = 10
+        self.shoot_delay = 20
         self.facing_right = True
+
+        self.magazine_size = 30
+        self.current_ammo = self.magazine_size
+        self.reload_time = 2.0
+        self.reload_timer = 0.0
+        self.is_reloading = False
 
     def update(self, keys):
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
@@ -35,7 +42,15 @@ class Player:
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             self.rect.y += self.speed
 
-        if keys[pygame.K_SPACE] and self.shoot_cooldown <= 0:
+        if keys[pygame.K_r] and not self.is_reloading and self.current_ammo < self.magazine_size:
+            self.start_reload()
+
+        if self.is_reloading:
+            self.reload_timer -= 1/60.0
+            if self.reload_timer <= 0:
+                self.finish_reload()
+
+        if keys[pygame.K_SPACE] and self.shoot_cooldown <= 0 and not self.is_reloading:
             self.shoot()
 
         if self.shoot_cooldown > 0:
@@ -47,10 +62,24 @@ class Player:
         self.rect.bottom = min(SCREEN_HEIGHT, self.rect.bottom)
 
     def shoot(self):
-        direction = 1 if self.facing_right else -1
-        x = self.rect.right if self.facing_right else self.rect.left
-        self.bullets.append(Bullet(x, self.rect.centery, direction))
-        self.shoot_cooldown = self.shoot_delay
+        if self.current_ammo > 0:
+            direction = 1 if self.facing_right else -1
+            x = self.rect.right if self.facing_right else self.rect.left
+            self.bullets.append(Bullet(x, self.rect.centery, direction))
+            self.current_ammo -= 1
+            self.shoot_cooldown = self.shoot_delay
+
+            if self.current_ammo == 0:
+                self.start_reload()
+    
+    def start_reload(self):
+        self.is_reloading = True
+        self.reload_timer = self.reload_time
+    
+    def finish_reload(self):
+        self.is_reloading = False
+        self.current_ammo = self.magazine_size
+        self.reload_timer = 0.0
 
     def update_bullets(self):
         for bullet in self.bullets[:]:

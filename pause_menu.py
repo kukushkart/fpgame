@@ -20,7 +20,7 @@ class PauseMenu:
             Button(center_x, SCREEN_HEIGHT // 2 + 20, button_width, button_height, "Exit", RED, (255, 150, 150)),
         ]
 
-    def run(self, background, player):
+    def run(self, background, player, zombies):
         is_paused = True
 
         while is_paused:
@@ -31,6 +31,8 @@ class PauseMenu:
                 if event.type == pygame.QUIT:
                     return "quit"
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
+                    return "resume"
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     return "resume"
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     mouse_click = True
@@ -48,6 +50,10 @@ class PauseMenu:
             
             # Затем игрока
             player.draw(self.screen)
+            
+            # Затем зомби
+            for zombie in zombies:
+                zombie.draw()
             
             # Затем полупрозрачный оверлей
             self.screen.blit(self.overlay, (0, 0))
