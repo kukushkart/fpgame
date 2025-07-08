@@ -14,7 +14,6 @@ def main():
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("Zombie Survival")
     clock = pygame.time.Clock()
-
     background = pygame.image.load(BG_IMAGE_PATH).convert()
     background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
 

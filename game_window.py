@@ -123,7 +123,7 @@ class GameWindow:
 
     def spawn_and_update_zombies(self):
         self.zombie_spawn_timer += 1
-        if self.zombie_spawn_timer >= 60:
+        if self.zombie_spawn_timer >= 120:
             self.zombie_spawn_timer = 0
             self.zombies.append(Zombie(self.screen))
 
@@ -152,13 +152,11 @@ class GameWindow:
         for bullet in self.player.bullets[:]:
             for z in self.zombies[:]:
                 if bullet.rect.colliderect(z.rect):
-                    # наносящей пуле урон
                     z.health -= bullet.damage
-                    # уничтожаем пулю
                     self.player.bullets.remove(bullet)
-                    # если зомби мёртв — удаляем
                     if z.health <= 0:
                         self.zombies.remove(z)
+                        self.money += 10
                     break
 
     def update(self):
