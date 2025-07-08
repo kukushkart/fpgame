@@ -1,4 +1,3 @@
-# game_window.py
 import pygame
 from config import *
 
@@ -9,7 +8,7 @@ class GameWindow:
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font(FONT_NAME, FONT_SIZE)
         self.running = True
-        self.background = self.load_background()  # Загружаем фон
+        self.background = self.load_background()
 
     def load_background(self):
         try:
@@ -19,7 +18,7 @@ class GameWindow:
             print(f"Invalid download of game bg: {GAME_BG_IMAGE_PATH}")
             bg = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
             bg.fill((50, 50, 70))
-            pygame.draw.rect(bg, (80, 80, 80), (0, SCREEN_HEIGHT - 100, SCREEN_WIDTH, 100))  # "Земля"
+            pygame.draw.rect(bg, (80, 80, 80), (0, SCREEN_HEIGHT - 100, SCREEN_WIDTH, 100))
             return bg
 
     def run(self):

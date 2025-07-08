@@ -12,7 +12,6 @@ def main():
     background = pygame.image.load(BG_IMAGE_PATH).convert()
     background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
-    # Кнопки
     buttons = [
         Button(SCREEN_WIDTH // 2 - 100, 200, 200, 60, "Start", GREEN, (150, 255, 150)),
         Button(SCREEN_WIDTH // 2 - 100, 280, 200, 60, "Info", GRAY, (200, 200, 200)),
@@ -29,15 +28,14 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:  # Левая кнопка мыши
+                if event.button == 1:
                     mouse_click = True
 
         if background:
-            screen.blit(background, (0, 0))  # Сначала рисуем фон
+            screen.blit(background, (0, 0))
         else:
             screen.fill(WHITE)
 
-        # Проверяем кнопки
         for button in buttons:
             button.check_hover(mouse_pos)
             if button.is_clicked(mouse_pos, mouse_click):
