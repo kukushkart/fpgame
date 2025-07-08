@@ -1,5 +1,6 @@
 import pygame
 from config import *
+from info_screen import InfoScreen
 from ui import Button, draw_menu
 from game_window import GameWindow
 
@@ -45,7 +46,10 @@ def main():
                     game = GameWindow(screen)
                     game.run()
                 elif button.text == "Info":
-                    print("Информация...")
+                    info = InfoScreen(screen)
+                    should_continue = info.run()
+                    if not should_continue:
+                        running = False
                 elif button.text == "Records":
                     print("Таблица рекордов...")
 

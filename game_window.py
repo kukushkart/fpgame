@@ -16,6 +16,7 @@ class GameWindow:
     def load_background(self):
         try:
             bg = pygame.image.load(GAME_BG_IMAGE_PATH).convert()
+            #bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
             return pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
         except:
             print("Invalid attempt of downloading bg. Using standart bg")
@@ -40,7 +41,7 @@ class GameWindow:
         self.screen.blit(self.background, (0, 0))
         self.player.draw(self.screen)
 
-        font = pygame.font.Font(None, 30)
+        font = pygame.font.Font(FONT_NAME, 30)
         debug_text = f"Position: ({self.player.rect.x}, {self.player.rect.y})"
         text_surface = font.render(debug_text, True, (255, 255, 255))
         self.screen.blit(text_surface, (10, 10))
