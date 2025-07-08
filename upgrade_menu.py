@@ -35,10 +35,10 @@ class UpgradeMenu:
             row = i // 3
             col = i % 3
             btn = Button(
-                SCREEN_WIDTH // 2 - 400 + col * 270,
-                200 + row * 150,
-                250, 120,
-                f"{upgrade['name']}\n{upgrade['price']}$",
+                SCREEN_WIDTH // 2 - 410 + col * 280,
+                200 + row * 160,
+                265, 135,
+                upgrade['name'],
                 (70, 70, 70), (100, 100, 100)
             )
             self.upgrade_buttons.append(btn)
@@ -80,10 +80,16 @@ class UpgradeMenu:
             for i, button in enumerate(self.upgrade_buttons):
                 button.draw(self.screen)
 
+                price_text = self.font_small.render(f"{self.upgrades[i]['price']}$", True, (255, 215, 0))
+                self.screen.blit(price_text, (
+                    button.rect.centerx - price_text.get_width() // 2,
+                    button.rect.centery + 12
+                ))
+
                 desc = self.font_small.render(self.upgrades[i]["description"], True, (200, 200, 200))
                 self.screen.blit(desc, (
                     button.rect.centerx - desc.get_width() // 2,
-                    button.rect.centery + 30
+                    button.rect.centery + 40
                 ))
 
             self.continue_button.draw(self.screen)

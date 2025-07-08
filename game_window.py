@@ -5,11 +5,13 @@ from zombies import Zombie
 from pause_menu import PauseMenu
 from ui import Button
 from upgrade_menu import UpgradeMenu
+from records_menu import RecordsScreen
 
 
 class GameWindow:
-    def __init__(self, screen):
+    def __init__(self, screen, player_name=""):
         self.screen = screen
+        self.player_name = player_name
         self.clock = pygame.time.Clock()
         self.running = True
         self.game_over = False
@@ -73,8 +75,14 @@ class GameWindow:
             self.exit_button.check_hover(mouse_pos)
 
             if self.new_game_button.is_clicked(mouse_pos, mouse_click):
+                # Добавляем запись перед сбросом игры
+                records = RecordsScreen(self.screen)
+                records.add_record(self.player_name, self.day, self.wave, self.money)
                 self.reset_game()
             elif self.exit_button.is_clicked(mouse_pos, mouse_click):
+                # Добавляем запись перед выходом
+                records = RecordsScreen(self.screen)
+                records.add_record(self.player_name, self.day, self.wave, self.money)
                 self.running = False
 
     def show_upgrade_menu(self):
@@ -207,7 +215,7 @@ class GameWindow:
 
         self.player.draw_bullets(self.screen)
 
-        day_text = self.debug_font.render(f"Day: {self.day} | Волна: {self.wave}", True, WHITE)
+        day_text = self.debug_font.render(f"Day: {self.day} | Wave: {self.wave}", True, WHITE)
         self.screen.blit(day_text, (SCREEN_WIDTH - day_text.get_width() - 10, 10))
 
         money_text = self.debug_font.render(f"Money: {self.money}$", True, (255, 215, 0))

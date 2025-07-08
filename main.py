@@ -4,7 +4,10 @@ from config import *
 from info_screen import InfoScreen
 from ui import Button, draw_menu
 from game_window import GameWindow
+from records_menu import RecordsScreen
+from player_name_input import PlayerNameInput
 import ctypes
+
 if os.name == "nt":
     ctypes.windll.user32.SetProcessDPIAware()
 
@@ -18,10 +21,11 @@ def main():
     background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
     buttons = [
-        Button(SCREEN_WIDTH // 2 - 100, 200, 200, 60, "Start", GREEN, (150, 255, 150)),
-        Button(SCREEN_WIDTH // 2 - 100, 280, 200, 60, "Info", GRAY, (200, 200, 200)),
-        Button(SCREEN_WIDTH // 2 - 100, 360, 200, 60, "Records", GRAY, (200, 200, 200)),
-        Button(SCREEN_WIDTH // 2 - 100, 440, 200, 60, "Exit", RED, (255, 150, 150)),
+        Button(SCREEN_WIDTH // 2 - 100, 200, 200, 60, "New Game", GREEN, (150, 255, 150)),
+        Button(SCREEN_WIDTH // 2 - 100, 280, 200, 60, "Load Game", (70, 130, 180), (100, 150, 200)),
+        Button(SCREEN_WIDTH // 2 - 100, 360, 200, 60, "Info", GRAY, (200, 200, 200)),
+        Button(SCREEN_WIDTH // 2 - 100, 440, 200, 60, "Records", GRAY, (200, 200, 200)),
+        Button(SCREEN_WIDTH // 2 - 100, 520, 200, 60, "Exit", RED, (255, 150, 150)),
     ]
 
     running = True
@@ -46,16 +50,24 @@ def main():
             if button.is_clicked(mouse_pos, mouse_click):
                 if button.text == "Exit":
                     running = False
-                elif button.text == "Start":
-                    game = GameWindow(screen)
-                    game.run()
+                elif button.text == "New Game":
+                    name_input = PlayerNameInput(screen)
+                    player_name = name_input.run()
+                    if player_name is not None:
+                        game = GameWindow(screen, player_name)
+                        game.run()
+                elif button.text == "Load Game":
+                    print("Загрузка игры... (пока не реализовано)")
                 elif button.text == "Info":
                     info = InfoScreen(screen)
                     should_continue = info.run()
                     if not should_continue:
                         running = False
                 elif button.text == "Records":
-                    print("Таблица рекордов...")
+                    records = RecordsScreen(screen)
+                    should_continue = records.run()
+                    if not should_continue:
+                        running = False
 
         draw_menu(screen, buttons)
         pygame.display.flip()
