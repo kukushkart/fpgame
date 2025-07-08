@@ -10,6 +10,7 @@ if os.name == "nt":
 
 def main():
     pygame.init()
+    pygame.font.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("Zombie Survival")
     clock = pygame.time.Clock()
