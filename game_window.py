@@ -24,7 +24,6 @@ class GameWindow:
 
         self.zombies = []
         self.zombie_spawn_timer = 0
-
         self.damage_timer = 0.0
 
         self.debug_font = pygame.font.Font(None, 30)
@@ -54,7 +53,7 @@ class GameWindow:
     def handle_events(self):
         mouse_pos = pygame.mouse.get_pos()
         mouse_click = False
-        
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
@@ -72,7 +71,7 @@ class GameWindow:
         if self.game_over:
             self.new_game_button.check_hover(mouse_pos)
             self.exit_button.check_hover(mouse_pos)
-            
+
             if self.new_game_button.is_clicked(mouse_pos, mouse_click):
                 self.reset_game()
             elif self.exit_button.is_clicked(mouse_pos, mouse_click):
@@ -92,7 +91,7 @@ class GameWindow:
             return True
         elif result == "resume":
             return True
-        
+
         return True
 
     def toggle_pause(self):
@@ -147,7 +146,24 @@ class GameWindow:
                     self.player.health = 0
                     self.game_over = True
         else:
-            pass
+            self.damage_timer = 0.0
+
+    def handle_bullet_zombie_collisions(self):
+        """
+        При попадании пули в зомби: снимаем здоровье,
+        пуля всегда исчезает, зомби удаляем только если health ≤ 0.
+        """
+        for bullet in self.player.bullets[:]:
+            for z in self.zombies[:]:
+                if bullet.rect.colliderect(z.rect):
+                    # наносящей пуле урон
+                    z.health -= bullet.damage
+                    # уничтожаем пулю
+                    self.player.bullets.remove(bullet)
+                    # если зомби мёртв — удаляем
+                    if z.health <= 0:
+                        self.zombies.remove(z)
+                    break
 
     def update(self):
         if not self.game_paused and not self.game_over:
@@ -181,9 +197,7 @@ class GameWindow:
 
     def draw(self):
         self.screen.blit(self.background, (0, 0))
-
         self.player.draw(self.screen)
-
         for z in self.zombies:
             z.draw()
 
@@ -193,9 +207,7 @@ class GameWindow:
         reload_text = "Reloading..." if self.player.is_reloading else ""
 
         self.screen.blit(font.render(pos_text, True, WHITE), (10, 10))
-
         self.draw_health_bar(10, 50, 200, 30, self.player.health, self.player.max_health)
-        
         self.screen.blit(font.render(ammo_text, True, WHITE), (10, 90))
         self.screen.blit(font.render(reload_text, True, RED), (10, 120))
 
@@ -215,7 +227,7 @@ class GameWindow:
 
             go_font = pygame.font.Font(FONT_NAME, 80)
             go_surf = go_font.render("Game Over", True, RED)
-            x = SCREEN_WIDTH // 2  - go_surf.get_width()  // 2
+            x = SCREEN_WIDTH // 2 - go_surf.get_width() // 2
             y = SCREEN_HEIGHT // 2 - go_surf.get_height() // 2 - 50
             self.screen.blit(go_surf, (x, y))
 
@@ -227,17 +239,15 @@ class GameWindow:
     def run(self):
         while self.running:
             dt = self.clock.tick(60) / 1000.0
-
             self.handle_events()
-
             if not self.handle_pause():
                 break
 
             if not self.paused:
                 self.update()
-                
                 if not self.game_over:
                     self.spawn_and_update_zombies()
+                    self.handle_bullet_zombie_collisions()
                     self.handle_collisions(dt)
             else:
                 if not self.show_upgrade_menu():
@@ -245,3 +255,4 @@ class GameWindow:
                 self.paused = False
 
             self.draw()
+        pygame.quit()
