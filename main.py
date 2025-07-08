@@ -16,7 +16,6 @@ def main():
     clock = pygame.time.Clock()
     background = pygame.image.load(BG_IMAGE_PATH).convert()
     background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
-
     buttons = [
         Button(SCREEN_WIDTH // 2 - 100, 200, 200, 60, "Start", GREEN, (150, 255, 150)),
         Button(SCREEN_WIDTH // 2 - 100, 280, 200, 60, "Info", GRAY, (200, 200, 200)),

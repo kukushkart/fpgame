@@ -136,15 +136,18 @@ class GameWindow:
         if self.game_over:
             return
 
+        # Проверяем, сталкивается ли игрок с каким-либо зомби
         collided = any(self.player.rect.colliderect(z.rect) for z in self.zombies)
+
         if collided:
-            self.damage_timer += dt
-            if self.damage_timer >= 2.0:
-                self.damage_timer = 0.0
+            if self.damage_timer <= 0.0:
                 self.player.health -= 5
                 if self.player.health <= 0:
                     self.player.health = 0
                     self.game_over = True
+                self.damage_timer = 1.5
+            else:
+                self.damage_timer -= dt
         else:
             self.damage_timer = 0.0
 
