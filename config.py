@@ -14,7 +14,6 @@ RED   = (255, 0, 0)
 GREEN = (0, 255, 0)
 
 # Шрифт
-pygame.font.init()
 FONT_NAME = 'assets/fonts/BebasNeue-Regular.ttf'
 FONT_SIZE = 50
 
