@@ -1,8 +1,12 @@
+import os
 import pygame
 from config import *
 from info_screen import InfoScreen
 from ui import Button, draw_menu
 from game_window import GameWindow
+import ctypes
+if os.name == "nt":
+    ctypes.windll.user32.SetProcessDPIAware()
 
 def main():
     pygame.init()
