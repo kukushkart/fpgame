@@ -22,3 +22,4 @@ FONT_SIZE = 50
 BG_IMAGE_PATH = "assets/images/zombie_bg_big.png"
 GAME_BG_IMAGE_PATH = "assets/images/main_bg.png"
 PLAYER_IMAGE_PATH = "assets/images/player.png"
+BULLET_PATH = "assets/images/bullet.png"

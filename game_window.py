@@ -58,11 +58,14 @@ class GameWindow:
         if not self.game_paused:
             keys = pygame.key.get_pressed()
             self.player.update(keys)
+            self.player.update_bullets()
 
     def draw(self):
         self.screen.blit(self.background, (0, 0))
 
         self.player.draw(self.screen)
+
+        self.player.draw_bullets(self.screen)
 
         debug_info = [
             f"Position: ({self.player.rect.x}, {self.player.rect.y})"
