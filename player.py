@@ -16,6 +16,9 @@ class Player:
         self.rect = self.image.get_rect()
         self.rect.midbottom = (SCREEN_WIDTH // 2, SCREEN_HEIGHT - 20)
 
+        self.damage_text = ""
+        self.damage_timer = 0.0
+
         self.base_speed = 4
         self.speed = self.base_speed
 
@@ -86,7 +89,7 @@ class Player:
             return True
         return False
 
-    def update(self, keys):
+    def update(self, keys, dt=1/60.0):
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             self.rect.x -= self.speed
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
@@ -100,7 +103,7 @@ class Player:
             self.start_reload()
 
         if self.is_reloading:
-            self.reload_timer -= 1 / 60.0
+            self.reload_timer -= dt
             if self.reload_timer <= 0:
                 self.finish_reload()
 
@@ -114,6 +117,12 @@ class Player:
         self.rect.right = min(830, self.rect.right)
         self.rect.top = max(458, self.rect.top)
         self.rect.bottom = min(SCREEN_HEIGHT, self.rect.bottom)
+
+        # Обновление таймера для текста урона
+        if self.damage_timer > 0:
+            self.damage_timer -= dt
+        else:
+            self.damage_text = ""  # Очищаем текст, когда таймер истек
 
     def shoot(self):
         if self.current_ammo > 0:
@@ -147,3 +156,22 @@ class Player:
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
+        
+        # Отображение текста урона над игроком
+        if self.damage_text and self.damage_timer > 0:
+            font = pygame.font.Font(FONT_NAME, 40)
+            damage_surface = font.render(self.damage_text, True, (255, 0, 0))  # Красный цвет
+            
+            # Рассчитываем позицию текста над игроком
+            text_x = self.rect.centerx - damage_surface.get_width() // 2
+            text_y = self.rect.top - 30
+            
+            # Анимация всплывания
+            float_offset = int((1.0 - self.damage_timer) * 20)  # Текст всплывает вверх
+            text_y -= float_offset
+            
+            # Прозрачность текста (исчезает со временем)
+            alpha = int(255 * self.damage_timer)
+            damage_surface.set_alpha(alpha)
+            
+            surface.blit(damage_surface, (text_x, text_y))

@@ -26,18 +26,13 @@ class GameWindow:
 
         self.zombies = []
         self.zombie_spawn_timer = 0
-        self.damage_timer = 0.0
 
         self.debug_font = pygame.font.Font(None, 30)
 
         self.game_paused = False
 
-        self.new_game_button = Button(
-            SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 50,
-            200, 60, "New Game", GREEN, (150, 255, 150)
-        )
         self.exit_button = Button(
-            SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 130,
+            SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 50,
             200, 60, "Exit", RED, (255, 150, 150)
         )
 
@@ -80,14 +75,9 @@ class GameWindow:
                     self.paused = True
 
         if self.game_over:
-            self.new_game_button.check_hover(mouse_pos)
             self.exit_button.check_hover(mouse_pos)
 
-            if self.new_game_button.is_clicked(mouse_pos, mouse_click):
-                records = RecordsScreen(self.screen)
-                records.add_record(self.player_name, self.day, self.wave, self.money)
-                self.reset_game()
-            elif self.exit_button.is_clicked(mouse_pos, mouse_click):
+            if self.exit_button.is_clicked(mouse_pos, mouse_click):
                 records = RecordsScreen(self.screen)
                 records.add_record(self.player_name, self.day, self.wave, self.money)
                 self.running = False
@@ -111,7 +101,6 @@ class GameWindow:
         self.player = Player()  # Здесь skin не передаем, так как reset_game не вызывается после выбора скина
         self.zombies = []
         self.zombie_spawn_timer = 0
-        self.damage_timer = 0.0
         self.game_paused = False
         self.day = 1
         self.wave = 1
@@ -168,19 +157,21 @@ class GameWindow:
         if self.game_over:
             return
 
-        collided = any(self.player.rect.colliderect(z.rect) for z in self.zombies)
-
-        if collided:
-            if self.damage_timer <= 0.0:
-                self.player.health -= 5
-                if self.player.health <= 0:
-                    self.player.health = 0
-                    self.game_over = True
-                self.damage_timer = 1.5
-            else:
-                self.damage_timer -= dt
-        else:
-            self.damage_timer = 0.0
+        for zombie in self.zombies:
+            if self.player.rect.colliderect(zombie.rect):
+                if zombie.attack_timer > 0:
+                    zombie.attack_timer -= dt
+                else:
+                    # Зомби атакует игрока
+                    self.player.health -= zombie.damage
+                    if self.player.health <= 0:
+                        self.player.health = 0
+                        self.game_over = True
+                    self.player.damage_text = f"-{zombie.damage}"  # Устанавливаем текст урона
+                    self.player.damage_timer = 1.0  # Устанавливаем таймер для текста
+                    
+                    # Перезагрузка таймера атаки
+                    zombie.attack_timer = zombie.attack_delay
 
     def handle_bullet_zombie_collisions(self):
         for bullet in self.player.bullets[:]:
@@ -193,11 +184,14 @@ class GameWindow:
                         self.money += 10
                     break
 
-    def update(self):
+    def update(self, dt):
         if not self.game_paused and not self.game_over:
             keys = pygame.key.get_pressed()
-            self.player.update(keys)
+            self.player.update(keys, dt)
             self.player.update_bullets()
+            # Уменьшаем hurt_timer, если он больше 0
+            if hasattr(self, 'hurt_timer') and self.hurt_timer > 0:
+                self.hurt_timer -= dt
 
     def draw_health_bar(self, x, y, width, height, current_health, max_health):
         border_rect = pygame.Rect(x - 2, y - 2, width + 4, height + 4)
@@ -276,7 +270,6 @@ class GameWindow:
             y = SCREEN_HEIGHT // 2 - go_surf.get_height() // 2 - 50
             self.screen.blit(go_surf, (x, y))
 
-            self.new_game_button.draw(self.screen)
             self.exit_button.draw(self.screen)
 
         pygame.display.flip()
@@ -289,7 +282,7 @@ class GameWindow:
                 break
 
             if not self.paused and not self.day_completed:
-                self.update()
+                self.update(dt)
                 if not self.game_over:
                     self.spawn_and_update_zombies(dt)
                     self.handle_bullet_zombie_collisions()

@@ -38,11 +38,13 @@ class Zombie:
         self.health = 50 + (self.day - 1) * 10  # Увеличиваем здоровье
         self.direction = random.choice([-1, 0, 1])
         self.alerted = False
+        
+        # Таймер атаки для каждого зомби
+        self.attack_timer = 0.0  # Таймер между атаками
+        self.attack_delay = 1.5  # Задержка между атаками в секундах
+        self.damage = 5  # Урон, наносимый зомби
 
     def move(self, player_pos):
-        """
-        Теперь всегда двигаем self.pos (float), передавая player_pos=(x,y)
-        """
         px, py = player_pos
         # вектор от зомби к игроку
         to_player = Vector2(px, py) - self.pos
