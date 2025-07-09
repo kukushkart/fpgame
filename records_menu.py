@@ -27,16 +27,15 @@ class RecordsScreen:
                 records = []
                 for line in f.readlines():
                     parts = line.strip().split(",")
-                    if len(parts) == 4:  # Теперь ожидаем 4 значения
+                    if len(parts) == 4:
                         records.append({
                             "name": parts[0],
                             "day": int(parts[1]),
                             "wave": int(parts[2]),
                             "money": int(parts[3])
                         })
-                # Сортируем по дню (по убыванию), затем по волне, затем по деньгам
                 records.sort(key=lambda x: (-x["day"], -x["wave"], -x["money"]))
-                return records[:10]  # Возвращаем только топ-10
+                return records[:10]
         except:
             return []
 
@@ -54,7 +53,6 @@ class RecordsScreen:
             "wave": wave,
             "money": money
         })
-        # Сортируем и обрезаем до топ-10
         self.records.sort(key=lambda x: (-x["day"], -x["wave"], -x["money"]))
         self.records = self.records[:10]
         self.save_records()
@@ -92,28 +90,24 @@ class RecordsScreen:
             self.screen.blit(title, (SCREEN_WIDTH // 2 - title.get_width() // 2, 50))
 
             headers = ["Rank", "Name", "Day", "Wave", "Money"]
-            header_x = [50, 150, 300, 450, 600]  # Увеличим ширину для имени
+            header_x = [50, 150, 300, 450, 600]
 
-            # Рисуем заголовки таблицы
             for i, header in enumerate(headers):
                 text = self.small_font.render(header, True, (255, 215, 0))  # Золотой цвет
                 self.screen.blit(text, (header_x[i], 150))
 
-            # Рисуем записи
             for i, record in enumerate(self.records):
-                if i >= 10:  # Не больше 10 записей
+                if i >= 10:
                     break
 
                 y_pos = 200 + i * 40
 
-                # Рисуем номер записи
                 rank_text = self.small_font.render(f"{i + 1}.", True, WHITE)
                 self.screen.blit(rank_text, (header_x[0], y_pos))
 
                 name_text = self.small_font.render(record["name"][:12], True, WHITE)  # Обрезаем длинные имена
                 self.screen.blit(name_text, (header_x[1], y_pos))
 
-                # Рисуем данные
                 day_text = self.small_font.render(str(record["day"]), True, WHITE)
                 wave_text = self.small_font.render(str(record["wave"]), True, WHITE)
                 money_text = self.small_font.render(str(record["money"]), True, (0, 255, 0))

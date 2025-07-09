@@ -10,6 +10,8 @@ from upgrade_menu import UpgradeMenu
 from records_menu import RecordsScreen
 from wave_manager import WAVES_CONFIG
 from custom_zombies import BlueZombie, GreenZombie, RedZombie, PurpleZombie, HatZombie, VioletZombie, LimeZombie, CyanZombie
+from save_manager import SaveManager
+
 
 class BloodEffect:
     def __init__(self, pos, frames, frame_time=0.08):
@@ -44,7 +46,7 @@ class GameWindow:
         self.clock = pygame.time.Clock()
         self.running = True
         self.game_over = False
-        self.player = Player(skin)  # Передаем skin в Player
+        self.player = Player(skin)
 
         self.day = 1
         self.wave = 1
@@ -86,6 +88,8 @@ class GameWindow:
         self.waves = WAVES_CONFIG.get(self.day, [])
         self.spawn_interval = 1.0
 
+        self.save_manager = SaveManager()
+
     def load_background(self):
         try:
             bg = pygame.image.load(GAME_BG_IMAGE_PATH).convert()
@@ -126,7 +130,7 @@ class GameWindow:
                 self.running = False
 
     def show_upgrade_menu(self):
-        menu = UpgradeMenu(self.screen, self.money, self.player)
+        menu = UpgradeMenu(self.screen, self.money, self.player, self.day, self.wave, self.player_name)
         result = menu.run()
         self.money = menu.money
 
@@ -141,7 +145,7 @@ class GameWindow:
 
     def reset_game(self):
         self.game_over = False
-        self.player = Player()  # Здесь skin не передаем, так как reset_game не вызывается после выбора скина
+        self.player = Player()
         self.zombies = []
         self.dying_zombies = []
         self.blood_effects = []
@@ -156,6 +160,63 @@ class GameWindow:
         self.wave_timer = 0.0
         self.day_completed = False
         self.waves = WAVES_CONFIG.get(self.day, [])
+
+    def load_game_state(self, filename=None):
+        """Загружает сохраненное состояние игры"""
+        if filename:
+            save_data = self.save_manager.load_save_by_filename(filename)
+        else:
+            save_data = self.save_manager.load_game()
+
+        if save_data is None:
+            return False
+
+        try:
+            # Загружаем основные данные игры
+            self.player_name = save_data.get("player_name", "")
+            self.day = save_data.get("day", 1)
+            self.wave = save_data.get("wave", 1)
+            self.money = save_data.get("money", 500)
+
+            # Создаем нового игрока с сохраненным скином
+            player_data = save_data.get("player", {})
+            skin_path = player_data.get("skin_path", "assets/images/test_survivor.png")
+            self.player = Player(skin_path)
+
+            # Загружаем состояние игрока
+            self.player.health = player_data.get("health", 100)
+            self.player.max_health = player_data.get("max_health", 100)
+            self.player.damage = player_data.get("damage", 10)
+            self.player.speed = player_data.get("speed", 4)
+            self.player.shoot_delay = player_data.get("shoot_delay", 20)
+            self.player.reload_time = player_data.get("reload_time", 2.0)
+            self.player.magazine_size = player_data.get("magazine_size", 30)
+            self.player.current_ammo = player_data.get("current_ammo", 30)
+            self.player.medkits = player_data.get("medkits", 0)
+            self.player.facing_right = player_data.get("facing_right", True)
+            self.player.ammo_capacity_bought = player_data.get("ammo_capacity_bought", False)
+
+            # Обновляем спрайт в соответствии с направлением
+            self.player.image = self.player.image_right if self.player.facing_right else self.player.image_left
+
+            # Обновляем волны для текущего дня
+            self.waves = WAVES_CONFIG.get(self.day, [])
+            self.current_wave = 0
+            self.zombies_to_spawn = 0
+            self.wave_timer = 0.0
+            self.day_completed = False
+
+            # Очищаем списки зомби и эффектов
+            self.zombies = []
+            self.dying_zombies = []
+            self.blood_effects = []
+
+            print(f"Game loaded: Day {self.day}, Wave {self.wave}, Money {self.money}")
+            return True
+
+        except Exception as e:
+            print(f"Error loading game state: {e}")
+            return False
 
     def handle_pause(self):
         if self.game_paused:
@@ -209,15 +270,13 @@ class GameWindow:
                 if zombie.attack_timer > 0:
                     zombie.attack_timer -= dt
                 else:
-                    # Зомби атакует игрока
                     self.player.health -= zombie.damage
                     if self.player.health <= 0:
                         self.player.health = 0
                         self.game_over = True
-                    self.player.damage_text = f"-{zombie.damage}"  # Устанавливаем текст урона
-                    self.player.damage_timer = 1.0  # Устанавливаем таймер для текста
+                    self.player.damage_text = f"-{zombie.damage}"
+                    self.player.damage_timer = 1.0
 
-                    # Перезагрузка таймера атаки
                     zombie.attack_timer = zombie.attack_delay
 
     def handle_bullet_zombie_collisions(self):
@@ -230,12 +289,11 @@ class GameWindow:
                     self.blood_effects.append(eff)
 
                     if z.health <= 0:
-                        # Проверяем, что зомби еще не в списке умирающих
                         already_dying = any(zombie == z for zombie, _ in self.dying_zombies)
                         if not already_dying:
                             self.dying_zombies.append((z, eff))
                         self.zombies.remove(z)
-                        self.money += 10
+                        self.money += 10 + 5 * (self.day - 1)
                     break
 
     def update(self, dt):
@@ -243,16 +301,12 @@ class GameWindow:
             keys = pygame.key.get_pressed()
             self.player.update(keys, dt)
             self.player.update_bullets()
-            # Уменьшаем hurt_timer, если он больше 0
-            # if hasattr(self, 'hurt_timer') and self.hurt_timer > 0:
-            # self.hurt_timer -= dt
 
     def update_blood_effects(self, dt):
         for eff in self.blood_effects[:]:
             eff.update(dt)
             if eff.done:
                 self.blood_effects.remove(eff)
-                # удалить связанного зомби
                 for pair in self.dying_zombies:
                     if pair[1] is eff:
                         self.dying_zombies.remove(pair)
@@ -292,7 +346,6 @@ class GameWindow:
             z.draw()
             eff.draw(self.screen)
 
-        # Отрисовываем эффекты крови
         for eff in self.blood_effects:
             eff.draw(self.screen)
 
@@ -362,9 +415,7 @@ class GameWindow:
                     self.handle_collisions(dt)
                     self.update_blood_effects(dt)
             elif self.paused:
-                if not self.show_upgrade_menu():
-                    break
-                self.paused = False
+                # Если день завершен, обновляем информацию о дне и волне ПЕРЕД показом меню
                 if self.day_completed:
                     self.day += 1
                     self.current_wave = 0
@@ -374,5 +425,9 @@ class GameWindow:
                     self.day_completed = False
                     self.waves = WAVES_CONFIG.get(self.day, [])
                     self.zombies = []
+
+                if not self.show_upgrade_menu():
+                    break
+                self.paused = False
 
             self.draw()

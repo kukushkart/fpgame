@@ -7,6 +7,8 @@ from game_window import GameWindow
 from records_menu import RecordsScreen
 from player_name_input import PlayerNameInput
 from character_select import CharacterSelectScreen
+from save_manager import SaveManager
+from load_save_menu import LoadSaveMenu
 import ctypes
 
 if os.name == "nt":
@@ -20,6 +22,7 @@ def main():
     clock = pygame.time.Clock()
     background = pygame.image.load(BG_IMAGE_PATH).convert()
     background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
+    
     buttons = [
         Button(SCREEN_WIDTH // 2 - 100, 200, 200, 60, "New Game", GREEN, (150, 255, 150)),
         Button(SCREEN_WIDTH // 2 - 100, 280, 200, 60, "Load Game", (70, 130, 180), (100, 150, 200)),
@@ -60,7 +63,16 @@ def main():
                             game = GameWindow(screen, player_name, selected_skin)
                             game.run()
                 elif button.text == "Load Game":
-                    print("Загрузка игры... (пока не реализовано)")
+                    # Открываем меню выбора сохранения
+                    load_menu = LoadSaveMenu(screen)
+                    selected_save = load_menu.run()
+                    
+                    if selected_save:
+                        game = GameWindow(screen)
+                        if game.load_game_state(selected_save):
+                            game.run()
+                        else:
+                            print("Failed to load game!")
                 elif button.text == "Info":
                     info = InfoScreen(screen)
                     should_continue = info.run()
@@ -73,6 +85,7 @@ def main():
                         running = False
 
         draw_menu(screen, buttons)
+        
         pygame.display.flip()
         clock.tick(60)
 

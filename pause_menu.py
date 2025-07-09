@@ -47,17 +47,13 @@ class PauseMenu:
                     elif button.text == "Exit":
                         return "quit"
 
-            # Сначала отрисовываем игровой фон
             self.screen.blit(background, (0, 0))
 
-            # Затем игрока
             player.draw(self.screen)
 
-            # Затем зомби
             for zombie in zombies:
                 zombie.draw()
 
-            # Затем полупрозрачный оверлей
             self.screen.blit(self.overlay, (0, 0))
 
             title = self.font.render("PAUSED", True, WHITE)

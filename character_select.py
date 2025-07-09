@@ -38,7 +38,7 @@ class CharacterSelectScreen:
             300, 60, "Return", RED, (255, 150, 150)
         )
 
-        self.selected_skin = None  # Хранит путь к выбранному скину
+        self.selected_skin = None
         self.color_active = pygame.Color('lightskyblue3')
         self.color_passive = pygame.Color('gray15')
 

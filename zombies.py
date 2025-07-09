@@ -20,7 +20,6 @@ class Zombie:
         self.screen = screen
         self.day = day
 
-        # загрузка изображения …
         try:
             self.original_image = pygame.image.load(ZOMBIE_IMAGE_PATH).convert_alpha()
         except Exception as e:
@@ -32,11 +31,9 @@ class Zombie:
         self.image = pygame.transform.smoothscale(self.original_image, (self.size, self.size))
         self.rect = self.image.get_rect()
 
-        # старт за правой границей экрана
         self.rect.x = SCREEN_WIDTH
         self.rect.y = random.randint(self.VERTICAL_MIN, SCREEN_HEIGHT - self.size)
 
-        # положение как Vector2
         self.pos = Vector2(self.rect.topleft)
 
         # скорость и здоровье с учётом дня
@@ -50,16 +47,16 @@ class Zombie:
         self.direction = random.choice([-1, 0, 1])
         self.alerted = False
 
-        # таймер атаки
         self.attack_timer = 0.0
         self.attack_delay = 1.5
+        self.damage = 5
+
 
     def move(self, player_pos):
         px, py = player_pos
         to_player = Vector2(px, py) - self.pos
         dist = to_player.length()
 
-        # переключаем в погоню, если в зоне
         if not self.alerted and dist <= self.detection_radius:
             self.alerted = True
 
@@ -67,14 +64,13 @@ class Zombie:
             dir_vec = to_player.normalize()
             self.pos += dir_vec * self.speed
         else:
-            # хаотичное движение
             self.pos.x -= self.speed
             if random.random() < 0.05:
                 self.direction = random.choice([-1, 0, 1])
             self.pos.y += self.direction * self.speed
 
-        # ограничение по Y
         self.pos.y = max(self.VERTICAL_MIN, min(SCREEN_HEIGHT - self.size, self.pos.y))
+
         self.rect.topleft = (int(self.pos.x), int(self.pos.y))
 
     def draw(self):
