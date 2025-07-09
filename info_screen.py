@@ -18,7 +18,6 @@ class InfoScreen:
             "WASD or arrows - movement",
             "Space - shooting",
             "ESC/p - pause",
-            "M - shop"
             "",
             "Authors: [Kukulyansky Raman and Paniavin Alexander]",
             "Version 1.0"
