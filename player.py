@@ -58,7 +58,7 @@ class Player:
             return True
 
         elif upgrade_name == "Rate of fire":
-            self.shoot_delay = max(10, self.shoot_delay - 5)
+            self.shoot_delay = max(10, self.shoot_delay - 2)
             return True
 
         elif upgrade_name == "Ammo capacity" and not self.ammo_capacity_bought:
@@ -69,6 +69,10 @@ class Player:
 
         elif upgrade_name == "Aid Kit":
             self.health += 50
+            return True
+
+        elif upgrade_name == "Reload speed":
+            self.reload_time -= 2
             return True
 
         return False

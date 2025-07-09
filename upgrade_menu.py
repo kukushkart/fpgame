@@ -20,15 +20,15 @@ class UpgradeMenu:
         )
 
         self.upgrades = [
-            {"name": "Strength", "price": 200, "description": "+20% damage"},
-            {"name": "Speed", "price": 200, "description": "+15% speed"},
-            {"name": "Health", "price": 250, "description": "+50 HP"},
-            {"name": "Rate of fire", "price": 300, "description": "-25% delay"},
-            {"name": "Ammo capacity", "price": 300, "description": "+5 bullets"},
+            {"name": "Strength", "price": 250, "description": "+5 damage"},
+            {"name": "Speed", "price": 300, "description": "+5 speed"},
+            {"name": "Health", "price": 200, "description": "+10 max HP"},
+            {"name": "Rate of fire", "price": 250, "description": "-2 delay"},
+            {"name": "Ammo capacity", "price": 300, "description": "+15 bullets"},
             {"name": "Aid Kit", "price": 200, "description": "+50 hp"},
-            {"name": "Shotgun", "price": 1100, "description": "Good at close range"},
-            {"name": "M1 garand", "price": 1700, "description": "Killer thing"},
-            {"name": "M4", "price": 1400, "description": "Good one"}
+            {"name": "Reload speed", "price": 250, "description": "-0.2 reload time"},
+            {"name": "Coming soon", "price": 0, "description": "*******"},
+            {"name": "Coming soon", "price": 0, "description": "*******"}
         ]
 
         self.upgrade_buttons = []
@@ -43,6 +43,36 @@ class UpgradeMenu:
                 (70, 70, 70), (100, 100, 100)
             )
             self.upgrade_buttons.append(btn)
+
+    def _draw_player_stats(self):
+        stats_font = pygame.font.Font(FONT_NAME, 30)
+
+        left_x = 120
+        y_start = 40
+        line_height = 40
+
+        left_stats = [
+            f"Strength: {self.player.damage}",
+            f"Speed: {self.player.speed}",
+            f"Max Health: {self.player.max_health}",
+            f"Current Health: {self.player.health}"
+        ]
+
+        for i, stat in enumerate(left_stats):
+            stat_text = stats_font.render(stat, True, WHITE)
+            self.screen.blit(stat_text, (left_x, y_start + i * line_height))
+
+        right_x = SCREEN_WIDTH - 310
+
+        right_stats = [
+            f"Rate of fire: {self.player.shoot_delay / 10:.1f}s",
+            f"Ammo capacity: {self.player.magazine_size}",
+            f"Reload speed: {self.player.reload_time:.1f}s"
+        ]
+
+        for i, stat in enumerate(right_stats):
+            stat_text = stats_font.render(stat, True, WHITE)
+            self.screen.blit(stat_text, (right_x, y_start + i * line_height))
 
     def run(self):
         paused = True
@@ -81,6 +111,8 @@ class UpgradeMenu:
                             self.money -= self.upgrades[i]["price"]
 
             self.screen.fill((30, 30, 40))
+
+            self._draw_player_stats()
 
             title = self.font_large.render("Shop", True, WHITE)
             self.screen.blit(title, (SCREEN_WIDTH // 2 - title.get_width() // 2, 50))
