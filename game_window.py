@@ -1,5 +1,6 @@
 import pygame
 import os
+import random
 from config import *
 from player import Player
 from zombies import Zombie
@@ -8,13 +9,9 @@ from ui import Button
 from upgrade_menu import UpgradeMenu
 from records_menu import RecordsScreen
 from wave_manager import WAVES_CONFIG
-from bluezombie import BlueZombie
+from custom_zombies import BlueZombie, GreenZombie, RedZombie, PurpleZombie, HatZombie, VioletZombie, LimeZombie, CyanZombie
 
 class BloodEffect:
-    """
-    Анимация брызг крови из трёх кадров.
-    """
-
     def __init__(self, pos, frames, frame_time=0.08):
         self.pos = pos  # центр эффекта (x,y)
         self.frames = frames  # список Surface
@@ -176,6 +173,8 @@ class GameWindow:
         if self.day_completed or self.game_over:
             return
 
+        ZombieClass = random.choice([BlueZombie, GreenZombie, RedZombie, PurpleZombie, HatZombie, VioletZombie, LimeZombie, CyanZombie])
+
         if len(self.zombies) == 0 and self.zombies_to_spawn == 0 and self.current_wave < len(self.waves):
             self.wave_timer += dt
             wave = self.waves[self.current_wave]
@@ -188,16 +187,7 @@ class GameWindow:
         if self.zombies_to_spawn > 0:
             self.zombie_spawn_timer += dt
             if self.zombie_spawn_timer >= self.spawn_interval:
-                frame_paths = [
-                    "assets/images/гт1ле.png",
-                    "assets/images/гт2ле.png",
-                    "assets/images/гт3ле.png",
-                ]
-                self.zombies.append(
-                    BlueZombie(self.screen, self.day,
-                                   frame_paths=frame_paths,
-                                   frame_time=0.12)
-                )
+                self.zombies.append(ZombieClass(self.screen, self.day))
                 self.zombies_to_spawn -= 1
                 self.zombie_spawn_timer = 0.0
 
