@@ -39,6 +39,7 @@ class BloodEffect:
             rect = img.get_rect(center=self.pos)
             surface.blit(img, rect)
 
+
 class GameWindow:
     def __init__(self, screen, player_name="", skin="assets/images/test_survivor.png"):
         self.screen = screen
@@ -244,8 +245,8 @@ class GameWindow:
             self.player.update(keys, dt)
             self.player.update_bullets()
             # Уменьшаем hurt_timer, если он больше 0
-            #if hasattr(self, 'hurt_timer') and self.hurt_timer > 0:
-                #self.hurt_timer -= dt
+            # if hasattr(self, 'hurt_timer') and self.hurt_timer > 0:
+            # self.hurt_timer -= dt
 
     def update_blood_effects(self, dt):
         for eff in self.blood_effects[:]:
@@ -291,7 +292,7 @@ class GameWindow:
         for z, eff in self.dying_zombies:
             z.draw()
             eff.draw(self.screen)
-        
+
         # Отрисовываем эффекты крови
         for eff in self.blood_effects:
             eff.draw(self.screen)

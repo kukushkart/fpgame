@@ -2,6 +2,7 @@ import pygame
 from config import *
 from ui import Button
 
+
 class PauseMenu:
     def __init__(self, screen):
         self.screen = screen
@@ -16,7 +17,8 @@ class PauseMenu:
         center_x = SCREEN_WIDTH // 2 - button_width // 2
 
         self.buttons = [
-            Button(center_x, SCREEN_HEIGHT // 2 - 80, button_width, button_height, "Return to game", GREEN, (150, 255, 150)),
+            Button(center_x, SCREEN_HEIGHT // 2 - 80, button_width, button_height, "Return to game", GREEN,
+                   (150, 255, 150)),
             Button(center_x, SCREEN_HEIGHT // 2 + 20, button_width, button_height, "Exit", RED, (255, 150, 150)),
         ]
 
@@ -47,14 +49,14 @@ class PauseMenu:
 
             # Сначала отрисовываем игровой фон
             self.screen.blit(background, (0, 0))
-            
+
             # Затем игрока
             player.draw(self.screen)
-            
+
             # Затем зомби
             for zombie in zombies:
                 zombie.draw()
-            
+
             # Затем полупрозрачный оверлей
             self.screen.blit(self.overlay, (0, 0))
 

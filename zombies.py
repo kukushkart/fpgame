@@ -6,11 +6,12 @@ import math
 from pygame.math import Vector2
 from config import *
 
-class Zombie:
-    VERTICAL_MIN = 458       # как у игрока
-    DETECTION_RADIUS = 300   # радиус «обнаружения» (пикс.)
 
-    def __init__(self, screen, day = 1):
+class Zombie:
+    VERTICAL_MIN = 500  # как у игрока
+    DETECTION_RADIUS = 300  # радиус «обнаружения» (пикс.)
+
+    def __init__(self, screen, day=1):
         self.screen = screen
         self.day = day
 
@@ -38,7 +39,7 @@ class Zombie:
         self.health = 50 + (self.day - 1) * 10  # Увеличиваем здоровье
         self.direction = random.choice([-1, 0, 1])
         self.alerted = False
-        
+
         # Таймер атаки для каждого зомби
         self.attack_timer = 0.0  # Таймер между атаками
         self.attack_delay = 1.5  # Задержка между атаками в секундах
