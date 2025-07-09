@@ -60,7 +60,7 @@ def main():
                             game = GameWindow(screen, player_name, selected_skin)
                             game.run()
                 elif button.text == "Load Game":
-                    print("Загрузка игры... (пока не реализовано)")
+                    print("Loading game... (coming soon)")
                 elif button.text == "Info":
                     info = InfoScreen(screen)
                     should_continue = info.run()

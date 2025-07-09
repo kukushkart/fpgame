@@ -11,10 +11,6 @@ from wave_manager import WAVES_CONFIG
 
 
 class BloodEffect:
-    """
-    Анимация брызг крови из трёх кадров.
-    """
-
     def __init__(self, pos, frames, frame_time=0.08):
         self.pos = pos  # центр эффекта (x,y)
         self.frames = frames  # список Surface
@@ -47,7 +43,7 @@ class GameWindow:
         self.clock = pygame.time.Clock()
         self.running = True
         self.game_over = False
-        self.player = Player(skin)  # Передаем skin в Player
+        self.player = Player(skin)
 
         self.day = 1
         self.wave = 1
@@ -144,7 +140,7 @@ class GameWindow:
 
     def reset_game(self):
         self.game_over = False
-        self.player = Player()  # Здесь skin не передаем, так как reset_game не вызывается после выбора скина
+        self.player = Player()
         self.zombies = []
         self.dying_zombies = []
         self.blood_effects = []
@@ -210,15 +206,13 @@ class GameWindow:
                 if zombie.attack_timer > 0:
                     zombie.attack_timer -= dt
                 else:
-                    # Зомби атакует игрока
                     self.player.health -= zombie.damage
                     if self.player.health <= 0:
                         self.player.health = 0
                         self.game_over = True
-                    self.player.damage_text = f"-{zombie.damage}"  # Устанавливаем текст урона
-                    self.player.damage_timer = 1.0  # Устанавливаем таймер для текста
+                    self.player.damage_text = f"-{zombie.damage}"
+                    self.player.damage_timer = 1.0
 
-                    # Перезагрузка таймера атаки
                     zombie.attack_timer = zombie.attack_delay
 
     def handle_bullet_zombie_collisions(self):
@@ -231,7 +225,6 @@ class GameWindow:
                     self.blood_effects.append(eff)
 
                     if z.health <= 0:
-                        # Проверяем, что зомби еще не в списке умирающих
                         already_dying = any(zombie == z for zombie, _ in self.dying_zombies)
                         if not already_dying:
                             self.dying_zombies.append((z, eff))
@@ -244,16 +237,12 @@ class GameWindow:
             keys = pygame.key.get_pressed()
             self.player.update(keys, dt)
             self.player.update_bullets()
-            # Уменьшаем hurt_timer, если он больше 0
-            # if hasattr(self, 'hurt_timer') and self.hurt_timer > 0:
-            # self.hurt_timer -= dt
 
     def update_blood_effects(self, dt):
         for eff in self.blood_effects[:]:
             eff.update(dt)
             if eff.done:
                 self.blood_effects.remove(eff)
-                # удалить связанного зомби
                 for pair in self.dying_zombies:
                     if pair[1] is eff:
                         self.dying_zombies.remove(pair)
@@ -293,7 +282,6 @@ class GameWindow:
             z.draw()
             eff.draw(self.screen)
 
-        # Отрисовываем эффекты крови
         for eff in self.blood_effects:
             eff.draw(self.screen)
 

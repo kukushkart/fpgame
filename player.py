@@ -5,14 +5,27 @@ from bullet import Bullet
 
 class Player:
     def __init__(self, skin="assets/images/test_survivor.png"):
+        self.skin_path = skin
+
         try:
-            self.original_image = pygame.image.load(skin).convert_alpha()
+            self.original_image_right = pygame.image.load(skin).convert_alpha()
         except:
             print("Invalid creating survivor attempt! Making smth else")
-            self.original_image = pygame.Surface((100, 100), pygame.SRCALPHA)
-            pygame.draw.circle(self.original_image, (255, 0, 0), (50, 50), 50)
+            self.original_image_right = pygame.Surface((100, 100), pygame.SRCALPHA)
+            pygame.draw.circle(self.original_image_right, (255, 0, 0), (50, 50), 50)
 
-        self.image = pygame.transform.smoothscale(self.original_image, (150, 150))
+        reverse_skin = skin.replace(".png", "_reverse.png")
+        try:
+            self.original_image_left = pygame.image.load(reverse_skin).convert_alpha()
+        except:
+            print(f"Reverse skin not found: {reverse_skin}. Using flipped image")
+
+            self.original_image_left = pygame.transform.flip(self.original_image_right, True, False)
+
+        self.image_right = pygame.transform.smoothscale(self.original_image_right, (150, 150))
+        self.image_left = pygame.transform.smoothscale(self.original_image_left, (150, 150))
+
+        self.image = self.image_right
         self.rect = self.image.get_rect()
         self.rect.midbottom = (SCREEN_WIDTH // 2, SCREEN_HEIGHT - 20)
 
@@ -47,6 +60,12 @@ class Player:
 
         self.ammo_capacity_bought = False
         self.medkits = 0
+        self.shift_pressed = False
+    
+    def flip_direction(self):
+        """Поворот персонажа"""
+        self.facing_right = not self.facing_right
+        self.image = self.image_right if self.facing_right else self.image_left
 
     def apply_upgrade(self, upgrade_name):
         if upgrade_name == "Strength":
@@ -89,7 +108,14 @@ class Player:
             return True
         return False
 
-    def update(self, keys, dt=1 / 60.0):
+    def update(self, keys, dt=1/60.0):
+        if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
+            if not hasattr(self, 'shift_pressed') or not self.shift_pressed:
+                self.flip_direction()
+                self.shift_pressed = True
+        else:
+            self.shift_pressed = False
+        
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             self.rect.x -= self.speed
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
@@ -118,16 +144,19 @@ class Player:
         self.rect.top = max(458, self.rect.top)
         self.rect.bottom = min(SCREEN_HEIGHT, self.rect.bottom)
 
-        # Обновление таймера для текста урона
         if self.damage_timer > 0:
             self.damage_timer -= dt
         else:
-            self.damage_text = ""  # Очищаем текст, когда таймер истек
+            self.damage_text = ""
 
     def shoot(self):
         if self.current_ammo > 0:
             direction = 1 if self.facing_right else -1
-            x = self.rect.right if self.facing_right else self.rect.left
+            if self.facing_right:
+                x = self.rect.right
+            else:
+                x = self.rect.left
+            
             self.bullets.append(Bullet(x, self.rect.centery, direction, self.damage))
             self.current_ammo -= 1
             self.shoot_cooldown = self.shoot_delay
@@ -157,20 +186,16 @@ class Player:
     def draw(self, surface):
         surface.blit(self.image, self.rect)
 
-        # Отображение текста урона над игроком
         if self.damage_text and self.damage_timer > 0:
             font = pygame.font.Font(FONT_NAME, 40)
-            damage_surface = font.render(self.damage_text, True, (255, 0, 0))  # Красный цвет
+            damage_surface = font.render(self.damage_text, True, (255, 0, 0))
 
-            # Рассчитываем позицию текста над игроком
             text_x = self.rect.centerx - damage_surface.get_width() // 2
             text_y = self.rect.top - 30
 
-            # Анимация всплывания
-            float_offset = int((1.0 - self.damage_timer) * 20)  # Текст всплывает вверх
+            float_offset = int((1.0 - self.damage_timer) * 20)
             text_y -= float_offset
 
-            # Прозрачность текста (исчезает со временем)
             alpha = int(255 * self.damage_timer)
             damage_surface.set_alpha(alpha)
 

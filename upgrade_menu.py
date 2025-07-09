@@ -12,23 +12,20 @@ class UpgradePopup:
         self.font_medium = pygame.font.Font(FONT_NAME, FONT_SIZE - 15)
         self.font_small = pygame.font.Font(FONT_NAME, FONT_SIZE - 25)
 
-        # Сохраняем скриншот текущего экрана как фон
         self.background = screen.copy()
 
-        # Размеры и позиция pop-up окна
         self.popup_width = 400
         self.popup_height = 300
         self.popup_x = SCREEN_WIDTH // 2 - self.popup_width // 2
         self.popup_y = SCREEN_HEIGHT // 2 - self.popup_height // 2
 
-        # Кнопки
         can_buy = money >= upgrade_info["price"] and upgrade_info["name"] != "Coming soon"
 
         if can_buy:
             buy_color = GREEN
             buy_hover_color = (150, 255, 150)
         else:
-            buy_color = (100, 100, 100)  # Серая кнопка
+            buy_color = (100, 100, 100)
             buy_hover_color = (120, 120, 120)
 
         self.buy_button = Button(
@@ -68,53 +65,43 @@ class UpgradePopup:
             if self.buy_button.is_clicked(mouse_pos, mouse_click) and self.can_buy:
                 return "buy"
 
-            # Рисуем сохраненный фон
             self.screen.blit(self.background, (0, 0))
 
-            # Рисуем полупрозрачную подложку
             overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
             overlay.set_alpha(128)
             overlay.fill((0, 0, 0))
             self.screen.blit(overlay, (0, 0))
 
-            # Рисуем pop-up окно
             popup_rect = pygame.Rect(self.popup_x, self.popup_y, self.popup_width, self.popup_height)
             pygame.draw.rect(self.screen, (60, 60, 70), popup_rect)
             pygame.draw.rect(self.screen, WHITE, popup_rect, 3)
 
-            # Рисуем информацию об улучшении
             title_text = self.font_large.render(self.upgrade_info["name"], True, WHITE)
             title_rect = title_text.get_rect(center=(self.popup_x + self.popup_width // 2, self.popup_y + 40))
             self.screen.blit(title_text, title_rect)
 
-            # Цена
             price_text = self.font_medium.render(f"Price: {self.upgrade_info['price']}$", True, (255, 215, 0))
             price_rect = price_text.get_rect(center=(self.popup_x + self.popup_width // 2, self.popup_y + 80))
             self.screen.blit(price_text, price_rect)
 
-            # Описание
             desc_text = self.font_medium.render(self.upgrade_info["description"], True, (200, 200, 200))
             desc_rect = desc_text.get_rect(center=(self.popup_x + self.popup_width // 2, self.popup_y + 120))
             self.screen.blit(desc_text, desc_rect)
 
-            # Текущие деньги
             money_text = self.font_small.render(f"Your money: {self.money}$", True, (255, 215, 0))
             money_rect = money_text.get_rect(center=(self.popup_x + self.popup_width // 2, self.popup_y + 160))
             self.screen.blit(money_text, money_rect)
 
-            # Если не хватает денег, показываем предупреждение
             if not self.can_buy and self.upgrade_info["name"] != "Coming soon":
                 warning_text = self.font_small.render("Not enough money!", True, RED)
                 warning_rect = warning_text.get_rect(center=(self.popup_x + self.popup_width // 2, self.popup_y + 180))
                 self.screen.blit(warning_text, warning_rect)
 
-            # Если это "Coming soon", показываем сообщение
             if self.upgrade_info["name"] == "Coming soon":
                 coming_text = self.font_small.render("This upgrade is not available yet", True, GRAY)
                 coming_rect = coming_text.get_rect(center=(self.popup_x + self.popup_width // 2, self.popup_y + 180))
                 self.screen.blit(coming_text, coming_rect)
 
-            # Рисуем кнопки
             self.buy_button.draw(self.screen)
             self.back_button.draw(self.screen)
 
@@ -267,20 +254,17 @@ class UpgradeMenu:
                     button.hover_color = (100, 100, 100)
 
                 if button.is_clicked(mouse_pos, mouse_click):
-                    # Отрисовываем экран перед показом pop-up
                     self.draw_main_screen()
                     pygame.display.flip()
 
-                    # Открываем pop-up окно для подтверждения покупки
                     popup = UpgradePopup(self.screen, self.upgrades[i], self.money)
                     result = popup.run()
 
                     if result == "quit":
                         return "quit"
                     elif result == "buy":
-                        if self.player.apply_upgrade(upgrade_name):  # Пробуем применить улучшение
+                        if self.player.apply_upgrade(upgrade_name):
                             self.money -= self.upgrades[i]["price"]
-                            # Обновляем экран после покупки
                             self.draw_main_screen()
                             pygame.display.flip()
 
