@@ -42,7 +42,7 @@ class Player:
         self.bullets = []
 
         self.ammo_capacity_bought = False
-        self.medkits = 0  # Количество аптечек
+        self.medkits = 0
 
     def apply_upgrade(self, upgrade_name):
         if upgrade_name == "Strength":

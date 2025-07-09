@@ -10,8 +10,9 @@ class Zombie:
     VERTICAL_MIN = 458       # как у игрока
     DETECTION_RADIUS = 300   # радиус «обнаружения» (пикс.)
 
-    def __init__(self, screen):
+    def __init__(self, screen, day = 1):
         self.screen = screen
+        self.day = day
 
         # пытаемся загрузить спрайт зомби
         try:
@@ -33,11 +34,10 @@ class Zombie:
         self.pos = Vector2(self.rect.topleft)
 
         # скорость и направление для хаоса
-        self.speed = random.randint(1, 2)
+        self.speed = random.randint(1, 2) + (self.day - 1) * 0.5  # Увеличиваем скорость
+        self.health = 50 + (self.day - 1) * 10  # Увеличиваем здоровье
         self.direction = random.choice([-1, 0, 1])
-
-        self.health = 50
-        self.alerted = False   # флаг «заметил ли игрока»
+        self.alerted = False
 
     def move(self, player_pos):
         """

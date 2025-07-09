@@ -14,9 +14,15 @@ class UpgradeMenu:
         self.font_small = pygame.font.Font(FONT_NAME, FONT_SIZE - 25)
 
         self.continue_button = Button(
-            SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT - 100,
+            SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT - 70,
             300, 60,
-            "Continue the day", GREEN, (150, 255, 150)
+            "Next day", GREEN, (150, 255, 150)
+        )
+
+        self.main_menu_button = Button(
+            SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT - 140,
+            300, 60,
+            "Back to Main Menu", RED, (255, 150, 150)
         )
 
         self.upgrades = [
@@ -91,8 +97,12 @@ class UpgradeMenu:
                     return "resume"
 
             self.continue_button.check_hover(mouse_pos)
+            self.main_menu_button.check_hover(mouse_pos)
+
             if self.continue_button.is_clicked(mouse_pos, mouse_click):
                 return "resume"
+            if self.main_menu_button.is_clicked(mouse_pos, mouse_click):
+                return "main_menu"
 
             for i, button in enumerate(self.upgrade_buttons):
                 button.check_hover(mouse_pos)
@@ -137,6 +147,7 @@ class UpgradeMenu:
                 ))
 
             self.continue_button.draw(self.screen)
+            self.main_menu_button.draw(self.screen)
 
             pygame.display.flip()
             self.clock.tick(60)
