@@ -7,7 +7,7 @@ from pygame.math import Vector2
 from config import *
 
 class Zombie:
-    VERTICAL_MIN = 458       # как у игрока
+    VERTICAL_MIN = 500      # как у игрока
     DETECTION_RADIUS = 300   # радиус «обнаружения» (пикс.)
 
     def __init__(self, screen, day = 1):
