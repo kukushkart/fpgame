@@ -36,13 +36,17 @@ class BloodParticle:
         pygame.draw.circle(surf, color, (self.radius, self.radius), self.radius)
         surface.blit(surf, (self.pos.x - self.radius, self.pos.y - self.radius))
 
+from records_menu import RecordsScreen
+from wave_manager import WAVES_CONFIG
 
 class GameWindow:
-    def __init__(self, screen):
+    def __init__(self, screen, player_name="", skin="assets/images/test_survivor.png"):
         self.screen = screen
+        self.player_name = player_name
         self.clock = pygame.time.Clock()
         self.running = True
         self.game_over = False
+        self.player = Player(skin)  # Передаем skin в Player
 
         self.day = 1
         self.wave = 1
@@ -71,12 +75,19 @@ class GameWindow:
             200, 60, "Exit", RED, (255, 150, 150)
         )
 
+        self.current_wave = 0
+        self.zombies_to_spawn = 0
+        self.wave_timer = 0.0
+        self.day_completed = False
+        self.waves = WAVES_CONFIG.get(self.day, [])
+        self.spawn_interval = 1.0
+
     def load_background(self):
         try:
             bg = pygame.image.load(GAME_BG_IMAGE_PATH).convert()
             return pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
         except:
-            print("Invalid bg download attempt. Using standart bg")
+            print("Invalid bg download attempt. Using standard bg")
             bg = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
             bg.fill((50, 70, 90))
             pygame.draw.rect(bg, (80, 100, 60), (0, SCREEN_HEIGHT - 50, SCREEN_WIDTH, 50))
@@ -97,25 +108,32 @@ class GameWindow:
                     self.toggle_pause()
                 if event.key == pygame.K_p:
                     self.toggle_pause()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_m:
-                self.paused = not self.paused
+                if event.key == pygame.K_h:
+                    self.player.use_medkit()
+                if event.key == pygame.K_RETURN and self.day_completed:
+                    self.paused = True
 
         if self.game_over:
             self.new_game_button.check_hover(mouse_pos)
             self.exit_button.check_hover(mouse_pos)
 
             if self.new_game_button.is_clicked(mouse_pos, mouse_click):
+                records = RecordsScreen(self.screen)
+                records.add_record(self.player_name, self.day, self.wave, self.money)
                 self.reset_game()
             elif self.exit_button.is_clicked(mouse_pos, mouse_click):
+                records = RecordsScreen(self.screen)
+                records.add_record(self.player_name, self.day, self.wave, self.money)
                 self.running = False
 
     def show_upgrade_menu(self):
-        menu = UpgradeMenu(self.screen, self.money)
+        menu = UpgradeMenu(self.screen, self.money, self.player)
         result = menu.run()
-
         self.money = menu.money
 
-        if result == "quit":
+        if result == "quit" or result == "main_menu":
+            records = RecordsScreen(self.screen)
+            records.add_record(self.player_name, self.day, self.wave, self.money)
             return False
         elif result == "continue":
             self.day += 1
@@ -131,7 +149,7 @@ class GameWindow:
 
     def reset_game(self):
         self.game_over = False
-        self.player = Player()
+        self.player = Player()  # Здесь skin не передаем, так как reset_game не вызывается после выбора скина
         self.zombies = []
         self.zombie_spawn_timer = 0
         self.damage_timer = 0.0
@@ -140,6 +158,11 @@ class GameWindow:
         self.wave = 1
         self.money = 500
         self.paused = False
+        self.current_wave = 0
+        self.zombies_to_spawn = 0
+        self.wave_timer = 0.0
+        self.day_completed = False
+        self.waves = WAVES_CONFIG.get(self.day, [])
 
     def handle_pause(self):
         if self.game_paused:
@@ -153,11 +176,25 @@ class GameWindow:
 
         return True
 
-    def spawn_and_update_zombies(self):
-        self.zombie_spawn_timer += 1
-        if self.zombie_spawn_timer >= 60:
-            self.zombie_spawn_timer = 0
-            self.zombies.append(Zombie(self.screen))
+    def spawn_and_update_zombies(self, dt):
+        if self.day_completed or self.game_over:
+            return
+
+        if len(self.zombies) == 0 and self.zombies_to_spawn == 0 and self.current_wave < len(self.waves):
+            self.wave_timer += dt
+            wave = self.waves[self.current_wave]
+            if self.wave_timer >= wave["delay"]:
+                self.zombies_to_spawn = wave["zombie_count"]
+                self.wave_timer = 0.0
+                self.current_wave += 1
+                self.wave = self.current_wave
+
+        if self.zombies_to_spawn > 0:
+            self.zombie_spawn_timer += dt
+            if self.zombie_spawn_timer >= self.spawn_interval:
+                self.zombies.append(Zombie(self.screen, self.day))
+                self.zombies_to_spawn -= 1
+                self.zombie_spawn_timer = 0.0
 
         player_pos = self.player.rect.center
         for z in self.zombies[:]:
@@ -165,11 +202,13 @@ class GameWindow:
             if z.is_off_screen():
                 self.zombies.remove(z)
 
+        if self.current_wave >= len(self.waves) and len(self.zombies) == 0 and self.zombies_to_spawn == 0:
+            self.day_completed = True
+
     def handle_collisions(self, dt):
         if self.game_over:
             return
 
-        # Проверяем, сталкивается ли игрок с каким-либо зомби
         collided = any(self.player.rect.colliderect(z.rect) for z in self.zombies)
 
         if collided:
@@ -248,15 +287,32 @@ class GameWindow:
         self.screen.blit(font.render(pos_text, True, WHITE), (10, 10))
         self.draw_health_bar(10, 50, 200, 30, self.player.health, self.player.max_health)
         self.screen.blit(font.render(ammo_text, True, WHITE), (10, 90))
-        self.screen.blit(font.render(reload_text, True, RED), (10, 120))
+        self.screen.blit(font.render(f"Medkits: {self.player.medkits} (H)", True, WHITE), (10, 120))
+        self.screen.blit(font.render(reload_text, True, RED), (10, 150))
 
         self.player.draw_bullets(self.screen)
 
-        day_text = self.debug_font.render(f"Day: {self.day} | Волна: {self.wave}", True, WHITE)
-        self.screen.blit(day_text, (SCREEN_WIDTH - day_text.get_width() - 10, 10))
+        day_wave_font = pygame.font.Font(FONT_NAME, 45)
+        day_text = day_wave_font.render(f"Day: {self.day}", True, WHITE)
+        wave_text = day_wave_font.render(f"Wave: {self.wave}", True, WHITE)
 
-        money_text = self.debug_font.render(f"Money: {self.money}$", True, (255, 215, 0))
-        self.screen.blit(money_text, (SCREEN_WIDTH - money_text.get_width() - 10, 40))
+        self.screen.blit(day_text, (SCREEN_WIDTH // 2 - day_text.get_width() // 2, 20))
+        self.screen.blit(wave_text, (SCREEN_WIDTH // 2 - wave_text.get_width() // 2, 90))
+
+        money_font = pygame.font.Font(FONT_NAME, 35)
+        money_text = money_font.render(f"Money: {self.money}$", True, (255, 215, 0))
+        self.screen.blit(money_text, (SCREEN_WIDTH - money_text.get_width() - 20, 20))
+
+        if self.day_completed:
+            overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+            overlay.set_alpha(128)
+            overlay.fill((0, 0, 0))
+            self.screen.blit(overlay, (0, 0))
+
+            font = pygame.font.Font(FONT_NAME, 50)
+            text = font.render("Press Enter to continue", True, WHITE)
+            text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+            self.screen.blit(text, text_rect)
 
         if self.game_over:
             overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -285,17 +341,26 @@ class GameWindow:
             if not self.handle_pause():
                 break
 
-            if not self.paused:
+            if not self.paused and not self.day_completed:
                 self.update()
                 if not self.game_over:
-                    self.spawn_and_update_zombies()
+                    self.spawn_and_update_zombies(dt)
                     self.handle_bullet_zombie_collisions()
                     self.handle_collisions(dt)
                     self.handle_bullet_zombie_collisions()
                     self.update_particles(dt)
-            else:
+            elif self.paused:
                 if not self.show_upgrade_menu():
                     break
                 self.paused = False
+                if self.day_completed:
+                    self.day += 1
+                    self.current_wave = 0
+                    self.wave = 1
+                    self.zombies_to_spawn = 0
+                    self.wave_timer = 0.0
+                    self.day_completed = False
+                    self.waves = WAVES_CONFIG.get(self.day, [])
+                    self.zombies = []
 
             self.draw()

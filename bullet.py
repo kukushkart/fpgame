@@ -2,9 +2,9 @@ import pygame
 from config import *
 
 class Bullet:
-    def __init__(self, x, y, direction):
+    def __init__(self, x, y, direction, damage):
         self.speed = 10
-        self.damage = 10
+        self.damage = damage
         self.direction = direction
 
         try:
