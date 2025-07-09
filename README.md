@@ -1,1 +1,0 @@
-Sanya and roma gays
