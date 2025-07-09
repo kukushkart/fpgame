@@ -42,6 +42,7 @@ class Player:
         self.bullets = []
 
         self.ammo_capacity_bought = False
+        self.medkits = 0  # Количество аптечек
 
     def apply_upgrade(self, upgrade_name):
         if upgrade_name == "Strength":
@@ -67,8 +68,8 @@ class Player:
             self.ammo_capacity_bought = True
             return True
 
-        elif upgrade_name == "Aid Kit":
-            self.health += 50
+        elif upgrade_name == "Medkit":
+            self.medkits += 1
             return True
 
         elif upgrade_name == "Reload speed":
@@ -77,6 +78,13 @@ class Player:
 
         return False
 
+    def use_medkit(self):
+        """Использовать аптечку для восстановления здоровья"""
+        if self.medkits > 0 and self.health < self.max_health:
+            self.health = min(self.max_health, self.health + 50)
+            self.medkits -= 1
+            return True
+        return False
 
     def update(self, keys):
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:

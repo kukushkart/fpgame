@@ -68,6 +68,8 @@ class GameWindow:
                     self.toggle_pause()
                 if event.key == pygame.K_p:
                     self.toggle_pause()
+                if event.key == pygame.K_h:
+                    self.player.use_medkit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_m:
                 self.paused = not self.paused
 
@@ -208,7 +210,12 @@ class GameWindow:
         self.screen.blit(font.render(pos_text, True, WHITE), (10, 10))
         self.draw_health_bar(10, 50, 200, 30, self.player.health, self.player.max_health)
         self.screen.blit(font.render(ammo_text, True, WHITE), (10, 90))
-        self.screen.blit(font.render(reload_text, True, RED), (10, 120))
+        
+        # Отображение количества аптечек
+        medkit_text = f"Medkits: {self.player.medkits} (H)"
+        self.screen.blit(font.render(medkit_text, True, WHITE), (10, 120))
+        
+        self.screen.blit(font.render(reload_text, True, RED), (10, 150))
 
         self.player.draw_bullets(self.screen)
 

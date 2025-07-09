@@ -25,7 +25,7 @@ class UpgradeMenu:
             {"name": "Health", "price": 200, "description": "+10 max HP"},
             {"name": "Rate of fire", "price": 250, "description": "-2 delay"},
             {"name": "Ammo capacity", "price": 300, "description": "+15 bullets"},
-            {"name": "Aid Kit", "price": 200, "description": "+50 hp"},
+            {"name": "Medkit", "price": 200, "description": "+1 medkit"},
             {"name": "Reload speed", "price": 250, "description": "-0.2 reload time"},
             {"name": "Coming soon", "price": 0, "description": "*******"},
             {"name": "Coming soon", "price": 0, "description": "*******"}
@@ -55,7 +55,8 @@ class UpgradeMenu:
             f"Strength: {self.player.damage}",
             f"Speed: {self.player.speed}",
             f"Max Health: {self.player.max_health}",
-            f"Current Health: {self.player.health}"
+            f"Current Health: {self.player.health}",
+            f"Medkits: {self.player.medkits}"
         ]
 
         for i, stat in enumerate(left_stats):
