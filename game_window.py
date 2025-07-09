@@ -8,6 +8,7 @@ from ui import Button
 from upgrade_menu import UpgradeMenu
 from records_menu import RecordsScreen
 from wave_manager import WAVES_CONFIG
+from save_manager import SaveManager
 
 
 class BloodEffect:
@@ -84,6 +85,8 @@ class GameWindow:
         self.day_completed = False
         self.waves = WAVES_CONFIG.get(self.day, [])
         self.spawn_interval = 1.0
+        
+        self.save_manager = SaveManager()
 
     def load_background(self):
         try:
@@ -125,7 +128,7 @@ class GameWindow:
                 self.running = False
 
     def show_upgrade_menu(self):
-        menu = UpgradeMenu(self.screen, self.money, self.player)
+        menu = UpgradeMenu(self.screen, self.money, self.player, self.day, self.wave, self.player_name)
         result = menu.run()
         self.money = menu.money
 
@@ -155,6 +158,63 @@ class GameWindow:
         self.wave_timer = 0.0
         self.day_completed = False
         self.waves = WAVES_CONFIG.get(self.day, [])
+    
+    def load_game_state(self, filename=None):
+        """Загружает сохраненное состояние игры"""
+        if filename:
+            save_data = self.save_manager.load_save_by_filename(filename)
+        else:
+            save_data = self.save_manager.load_game()
+        
+        if save_data is None:
+            return False
+        
+        try:
+            # Загружаем основные данные игры
+            self.player_name = save_data.get("player_name", "")
+            self.day = save_data.get("day", 1)
+            self.wave = save_data.get("wave", 1)
+            self.money = save_data.get("money", 500)
+            
+            # Создаем нового игрока с сохраненным скином
+            player_data = save_data.get("player", {})
+            skin_path = player_data.get("skin_path", "assets/images/test_survivor.png")
+            self.player = Player(skin_path)
+            
+            # Загружаем состояние игрока
+            self.player.health = player_data.get("health", 100)
+            self.player.max_health = player_data.get("max_health", 100)
+            self.player.damage = player_data.get("damage", 10)
+            self.player.speed = player_data.get("speed", 4)
+            self.player.shoot_delay = player_data.get("shoot_delay", 20)
+            self.player.reload_time = player_data.get("reload_time", 2.0)
+            self.player.magazine_size = player_data.get("magazine_size", 30)
+            self.player.current_ammo = player_data.get("current_ammo", 30)
+            self.player.medkits = player_data.get("medkits", 0)
+            self.player.facing_right = player_data.get("facing_right", True)
+            self.player.ammo_capacity_bought = player_data.get("ammo_capacity_bought", False)
+            
+            # Обновляем спрайт в соответствии с направлением
+            self.player.image = self.player.image_right if self.player.facing_right else self.player.image_left
+            
+            # Обновляем волны для текущего дня
+            self.waves = WAVES_CONFIG.get(self.day, [])
+            self.current_wave = 0
+            self.zombies_to_spawn = 0
+            self.wave_timer = 0.0
+            self.day_completed = False
+            
+            # Очищаем списки зомби и эффектов
+            self.zombies = []
+            self.dying_zombies = []
+            self.blood_effects = []
+            
+            print(f"Game loaded: Day {self.day}, Wave {self.wave}, Money {self.money}")
+            return True
+            
+        except Exception as e:
+            print(f"Error loading game state: {e}")
+            return False
 
     def handle_pause(self):
         if self.game_paused:
@@ -351,9 +411,7 @@ class GameWindow:
                     self.handle_collisions(dt)
                     self.update_blood_effects(dt)
             elif self.paused:
-                if not self.show_upgrade_menu():
-                    break
-                self.paused = False
+                # Если день завершен, обновляем информацию о дне и волне ПЕРЕД показом меню
                 if self.day_completed:
                     self.day += 1
                     self.current_wave = 0
@@ -363,5 +421,9 @@ class GameWindow:
                     self.day_completed = False
                     self.waves = WAVES_CONFIG.get(self.day, [])
                     self.zombies = []
+                
+                if not self.show_upgrade_menu():
+                    break
+                self.paused = False
 
             self.draw()

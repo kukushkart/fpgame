@@ -1,6 +1,156 @@
 import pygame
 from config import *
 from ui import Button
+from save_manager import SaveManager
+
+
+class SavePopup:
+    def __init__(self, screen, default_name=""):
+        self.screen = screen
+        self.default_name = default_name
+        self.font_large = pygame.font.Font(FONT_NAME, FONT_SIZE - 5)
+        self.font_medium = pygame.font.Font(FONT_NAME, FONT_SIZE - 15)
+        self.font_small = pygame.font.Font(FONT_NAME, FONT_SIZE - 25)
+        
+        # Проверяем лимит сохранений
+        self.save_manager = SaveManager()
+        self.can_save = self.save_manager.can_create_save()
+        
+        # Сохраняем скриншот текущего экрана как фон
+        self.background = screen.copy()
+        
+        # Размеры и позиция pop-up окна
+        self.popup_width = 450
+        self.popup_height = 300 if not self.can_save else 250
+        self.popup_x = SCREEN_WIDTH // 2 - self.popup_width // 2
+        self.popup_y = SCREEN_HEIGHT // 2 - self.popup_height // 2
+        
+        # Поле ввода для названия сохранения
+        self.input_text = default_name
+        self.input_active = True
+        self.cursor_visible = True
+        self.cursor_timer = 0
+        
+        # Кнопки
+        save_color = GREEN if self.can_save else (100, 100, 100)
+        save_hover_color = (150, 255, 150) if self.can_save else (120, 120, 120)
+        
+        self.save_button = Button(
+            self.popup_x + 50, self.popup_y + self.popup_height - 80,
+            150, 50, "Save", save_color, save_hover_color
+        )
+        
+        self.cancel_button = Button(
+            self.popup_x + 250, self.popup_y + self.popup_height - 80,
+            150, 50, "Cancel", RED, (255, 150, 150)
+        )
+    
+    def run(self):
+        running = True
+        
+        while running:
+            mouse_pos = pygame.mouse.get_pos()
+            mouse_click = False
+            
+            # Обновляем курсор
+            self.cursor_timer += 1
+            if self.cursor_timer >= 30:  # Мигание каждые 30 кадров
+                self.cursor_visible = not self.cursor_visible
+                self.cursor_timer = 0
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return None
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    mouse_click = True
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        return None
+                    elif event.key == pygame.K_RETURN:
+                        if self.input_text.strip():
+                            return self.input_text.strip()
+                    elif event.key == pygame.K_BACKSPACE:
+                        self.input_text = self.input_text[:-1]
+                    else:
+                        # Добавляем символ, если это печатный символ
+                        if event.unicode.isprintable() and len(self.input_text) < 30:
+                            self.input_text += event.unicode
+            
+            self.save_button.check_hover(mouse_pos)
+            self.cancel_button.check_hover(mouse_pos)
+            
+            if self.cancel_button.is_clicked(mouse_pos, mouse_click):
+                return None
+            
+            if self.save_button.is_clicked(mouse_pos, mouse_click):
+                if self.can_save and self.input_text.strip():
+                    return self.input_text.strip()
+            
+            # Рисуем сохраненный фон
+            self.screen.blit(self.background, (0, 0))
+            
+            # Рисуем полупрозрачную подложку
+            overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+            overlay.set_alpha(128)
+            overlay.fill((0, 0, 0))
+            self.screen.blit(overlay, (0, 0))
+            
+            # Рисуем pop-up окно
+            popup_rect = pygame.Rect(self.popup_x, self.popup_y, self.popup_width, self.popup_height)
+            pygame.draw.rect(self.screen, (60, 60, 70), popup_rect)
+            pygame.draw.rect(self.screen, WHITE, popup_rect, 3)
+            
+            # Заголовок
+            title_text = self.font_large.render("Save Game", True, WHITE)
+            title_rect = title_text.get_rect(center=(self.popup_x + self.popup_width // 2, self.popup_y + 40))
+            self.screen.blit(title_text, title_rect)
+            
+            # Подсказка или сообщение о лимите
+            if self.can_save:
+                hint_text = self.font_small.render("Enter save name:", True, (200, 200, 200))
+                hint_rect = hint_text.get_rect(center=(self.popup_x + self.popup_width // 2, self.popup_y + 80))
+                self.screen.blit(hint_text, hint_rect)
+                
+                # Поле ввода
+                input_rect = pygame.Rect(self.popup_x + 50, self.popup_y + 100, self.popup_width - 100, 40)
+                pygame.draw.rect(self.screen, WHITE, input_rect)
+                pygame.draw.rect(self.screen, BLACK, input_rect, 2)
+            else:
+                # Сообщение о превышении лимита
+                limit_text1 = self.font_medium.render("Save limit reached!", True, RED)
+                limit_rect1 = limit_text1.get_rect(center=(self.popup_x + self.popup_width // 2, self.popup_y + 80))
+                self.screen.blit(limit_text1, limit_rect1)
+                
+                limit_text2 = self.font_small.render("You can have maximum 6 saves.", True, (200, 200, 200))
+                limit_rect2 = limit_text2.get_rect(center=(self.popup_x + self.popup_width // 2, self.popup_y + 110))
+                self.screen.blit(limit_text2, limit_rect2)
+                
+                limit_text3 = self.font_small.render("Please delete some saves first.", True, (200, 200, 200))
+                limit_rect3 = limit_text3.get_rect(center=(self.popup_x + self.popup_width // 2, self.popup_y + 140))
+                self.screen.blit(limit_text3, limit_rect3)
+            
+            # Текст в поле ввода (только если можно сохранить)
+            if self.can_save:
+                input_surface = self.font_medium.render(self.input_text, True, BLACK)
+                input_text_rect = input_surface.get_rect()
+                input_text_rect.left = input_rect.left + 5
+                input_text_rect.centery = input_rect.centery
+                self.screen.blit(input_surface, input_text_rect)
+                
+                # Курсор
+                if self.cursor_visible:
+                    cursor_x = input_text_rect.right + 2
+                    cursor_y1 = input_rect.top + 5
+                    cursor_y2 = input_rect.bottom - 5
+                    pygame.draw.line(self.screen, BLACK, (cursor_x, cursor_y1), (cursor_x, cursor_y2), 2)
+            
+            # Рисуем кнопки
+            self.save_button.draw(self.screen)
+            self.cancel_button.draw(self.screen)
+            
+            pygame.display.flip()
+        
+        return None
 
 
 class UpgradePopup:
@@ -111,25 +261,43 @@ class UpgradePopup:
 
 
 class UpgradeMenu:
-    def __init__(self, screen, money, player):
+    def __init__(self, screen, money, player, day=1, wave=1, player_name=""):
         self.screen = screen
         self.money = money
         self.player = player
+        self.day = day
+        self.wave = wave
+        self.player_name = player_name
         self.clock = pygame.time.Clock()
         self.font_large = pygame.font.Font(FONT_NAME, FONT_SIZE)
         self.font_medium = pygame.font.Font(FONT_NAME, FONT_SIZE - 15)
         self.font_small = pygame.font.Font(FONT_NAME, FONT_SIZE - 25)
+        
+        self.save_manager = SaveManager()
 
-        self.continue_button = Button(
-            SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT - 70,
-            300, 60,
-            "Next day", GREEN, (150, 255, 150)
-        )
-
+        button_width = 180
+        button_height = 60
+        button_spacing = 20
+        total_width = button_width * 3 + button_spacing * 2
+        start_x = SCREEN_WIDTH // 2 - total_width // 2
+        button_y = SCREEN_HEIGHT - 70
+        
         self.main_menu_button = Button(
-            SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT - 140,
-            300, 60,
-            "Back to Main Menu", RED, (255, 150, 150)
+            start_x, button_y,
+            button_width, button_height,
+            "Main Menu", RED, (255, 150, 150)
+        )
+        
+        self.save_button = Button(
+            start_x + button_width + button_spacing, button_y,
+            button_width, button_height,
+            "Save Game", (70, 130, 180), (100, 150, 200)
+        )
+        
+        self.continue_button = Button(
+            start_x + (button_width + button_spacing) * 2, button_y,
+            button_width, button_height,
+            "Next Day", GREEN, (150, 255, 150)
         )
 
         self.upgrades = [
@@ -215,8 +383,9 @@ class UpgradeMenu:
                 button.rect.centery + 40
             ))
 
-        self.continue_button.draw(self.screen)
         self.main_menu_button.draw(self.screen)
+        self.save_button.draw(self.screen)
+        self.continue_button.draw(self.screen)
 
     def run(self):
         paused = True
@@ -235,11 +404,31 @@ class UpgradeMenu:
 
             self.continue_button.check_hover(mouse_pos)
             self.main_menu_button.check_hover(mouse_pos)
+            self.save_button.check_hover(mouse_pos)
 
             if self.continue_button.is_clicked(mouse_pos, mouse_click):
                 return "resume"
             if self.main_menu_button.is_clicked(mouse_pos, mouse_click):
                 return "main_menu"
+            if self.save_button.is_clicked(mouse_pos, mouse_click):
+                # Отрисовываем экран перед показом pop-up
+                self.draw_main_screen()
+                pygame.display.flip()
+                
+                # Дефолтное название сохранения
+                from datetime import datetime
+                default_name = f"{self.player_name}_Day{self.day}_Wave{self.wave}_{datetime.now().strftime('%m%d_%H%M')}"
+                
+                # Открываем pop-up для ввода названия
+                save_popup = SavePopup(self.screen, default_name)
+                save_name = save_popup.run()
+                
+                if save_name:
+                    success = self.save_manager.save_game(self.player, self.day, self.wave, self.money, self.player_name, save_name)
+                    if success:
+                        print(f"Game saved successfully as '{save_name}'!")
+                    else:
+                        print("Failed to save game!")
 
             for i, button in enumerate(self.upgrade_buttons):
                 button.check_hover(mouse_pos)

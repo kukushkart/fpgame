@@ -63,7 +63,6 @@ class Player:
         self.shift_pressed = False
     
     def flip_direction(self):
-        """Поворот персонажа"""
         self.facing_right = not self.facing_right
         self.image = self.image_right if self.facing_right else self.image_left
 
@@ -77,8 +76,8 @@ class Player:
             return True
 
         elif upgrade_name == "Health":
-            self.max_health += 5
-            self.health += 5
+            self.max_health += 10
+            self.health += 10
             return True
 
         elif upgrade_name == "Rate of fire":
