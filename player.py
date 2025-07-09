@@ -95,7 +95,7 @@ class Player:
             return True
 
         elif upgrade_name == "Reload speed":
-            self.reload_time -= 2
+            self.reload_time -= 0.2
             return True
 
         return False

@@ -287,10 +287,10 @@ class UpgradeMenu:
             {"name": "Strength", "price": 250, "description": "+5 damage"},
             {"name": "Speed", "price": 300, "description": "+5 speed"},
             {"name": "Health", "price": 200, "description": "+10 max HP"},
-            {"name": "Rate of fire", "price": 250, "description": "-2 delay"},
+            {"name": "Rate of fire", "price": 250, "description": "-0.2s delay"},
             {"name": "Ammo capacity", "price": 300, "description": "+15 bullets"},
             {"name": "Medkit", "price": 200, "description": "+1 medkit"},
-            {"name": "Reload speed", "price": 250, "description": "-0.2 reload time"},
+            {"name": "Reload speed", "price": 250, "description": "-0.2s reload time"},
             {"name": "Coming soon", "price": 0, "description": "*******"},
             {"name": "Coming soon", "price": 0, "description": "*******"}
         ]

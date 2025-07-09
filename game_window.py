@@ -289,7 +289,7 @@ class GameWindow:
                         if not already_dying:
                             self.dying_zombies.append((z, eff))
                         self.zombies.remove(z)
-                        self.money += 10
+                        self.money += 10 + 5 * (self.day - 1)
                     break
 
     def update(self, dt):
