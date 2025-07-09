@@ -6,6 +6,7 @@ from ui import Button, draw_menu
 from game_window import GameWindow
 from records_menu import RecordsScreen
 from player_name_input import PlayerNameInput
+from character_select import CharacterSelectScreen
 import ctypes
 
 if os.name == "nt":
@@ -53,8 +54,11 @@ def main():
                     name_input = PlayerNameInput(screen)
                     player_name = name_input.run()
                     if player_name is not None:
-                        game = GameWindow(screen, player_name)
-                        game.run()
+                        char_select = CharacterSelectScreen(screen)
+                        selected_skin = char_select.run()
+                        if selected_skin is not None:
+                            game = GameWindow(screen, player_name, selected_skin)
+                            game.run()
                 elif button.text == "Load Game":
                     print("Загрузка игры... (пока не реализовано)")
                 elif button.text == "Info":

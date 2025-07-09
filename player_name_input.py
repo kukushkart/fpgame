@@ -15,7 +15,7 @@ class PlayerNameInput:
 
         self.start_button = Button(
             SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT // 2 + 100,
-            300, 60, "Start Game", GREEN, (150, 255, 150)
+            300, 60, "Next", GREEN, (150, 255, 150)
         )
         self.back_button = Button(
             SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT // 2 + 170,

@@ -2,10 +2,11 @@ import pygame
 from config import *
 from bullet import Bullet
 
+
 class Player:
-    def __init__(self):
+    def __init__(self, skin="assets/images/test_survivor.png"):
         try:
-            self.original_image = pygame.image.load("assets/images/test_survivor.png").convert_alpha()
+            self.original_image = pygame.image.load(skin).convert_alpha()
         except:
             print("Invalid creating survivor attempt! Making smth else")
             self.original_image = pygame.Surface((100, 100), pygame.SRCALPHA)
@@ -79,7 +80,6 @@ class Player:
         return False
 
     def use_medkit(self):
-        """Использовать аптечку для восстановления здоровья"""
         if self.medkits > 0 and self.health < self.max_health:
             self.health = min(self.max_health, self.health + 50)
             self.medkits -= 1
@@ -100,7 +100,7 @@ class Player:
             self.start_reload()
 
         if self.is_reloading:
-            self.reload_timer -= 1/60.0
+            self.reload_timer -= 1 / 60.0
             if self.reload_timer <= 0:
                 self.finish_reload()
 
@@ -129,7 +129,7 @@ class Player:
     def start_reload(self):
         self.is_reloading = True
         self.reload_timer = self.reload_time
-    
+
     def finish_reload(self):
         self.is_reloading = False
         self.current_ammo = self.magazine_size

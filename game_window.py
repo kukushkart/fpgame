@@ -9,13 +9,13 @@ from records_menu import RecordsScreen
 from wave_manager import WAVES_CONFIG
 
 class GameWindow:
-    def __init__(self, screen, player_name=""):
+    def __init__(self, screen, player_name="", skin="assets/images/test_survivor.png"):
         self.screen = screen
         self.player_name = player_name
         self.clock = pygame.time.Clock()
         self.running = True
         self.game_over = False
-        self.player = Player()
+        self.player = Player(skin)  # Передаем skin в Player
 
         self.day = 1
         self.wave = 1
@@ -23,7 +23,6 @@ class GameWindow:
         self.paused = False
 
         self.background = self.load_background()
-        self.player = Player()
 
         self.zombies = []
         self.zombie_spawn_timer = 0
@@ -42,7 +41,6 @@ class GameWindow:
             200, 60, "Exit", RED, (255, 150, 150)
         )
 
-        # Добавить переменные для волн
         self.current_wave = 0
         self.zombies_to_spawn = 0
         self.wave_timer = 0.0
@@ -110,7 +108,7 @@ class GameWindow:
 
     def reset_game(self):
         self.game_over = False
-        self.player = Player()
+        self.player = Player()  # Здесь skin не передаем, так как reset_game не вызывается после выбора скина
         self.zombies = []
         self.zombie_spawn_timer = 0
         self.damage_timer = 0.0
@@ -148,7 +146,7 @@ class GameWindow:
                 self.zombies_to_spawn = wave["zombie_count"]
                 self.wave_timer = 0.0
                 self.current_wave += 1
-                self.wave = self.current_wave  # Обновляем self.wave
+                self.wave = self.current_wave
 
         if self.zombies_to_spawn > 0:
             self.zombie_spawn_timer += dt
