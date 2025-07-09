@@ -6,16 +6,21 @@ import math
 from pygame.math import Vector2
 from config import *
 
-
 class Zombie:
-    VERTICAL_MIN = 500  # как у игрока
-    DETECTION_RADIUS = 300  # радиус «обнаружения» (пикс.)
+    # Параметры по умолчанию (можно переопределить в подклассе)
+    BASE_SPEED_RANGE = (1, 2)      # мин и макс рандомной скорости
+    SPEED_PER_DAY = 0.5            # добавляется к скорости за каждый день
+    BASE_HEALTH = 50               # здоровье на 1-й день
+    HEALTH_PER_DAY = 10            # прирост здоровья за день
+    DETECTION_RADIUS = 300         # радиус обнаружения
+    DAMAGE = 5                     # урон по игроку
+    VERTICAL_MIN = 500             # минимальная Y-координата
 
     def __init__(self, screen, day=1):
         self.screen = screen
         self.day = day
 
-        # пытаемся загрузить спрайт зомби
+        # загрузка изображения …
         try:
             self.original_image = pygame.image.load(ZOMBIE_IMAGE_PATH).convert_alpha()
         except Exception as e:
@@ -31,46 +36,45 @@ class Zombie:
         self.rect.x = SCREEN_WIDTH
         self.rect.y = random.randint(self.VERTICAL_MIN, SCREEN_HEIGHT - self.size)
 
-        # переводим позицию в float
+        # положение как Vector2
         self.pos = Vector2(self.rect.topleft)
 
-        # скорость и направление для хаоса
-        self.speed = random.randint(1, 2) + (self.day - 1) * 0.5  # Увеличиваем скорость
-        self.health = 50 + (self.day - 1) * 10  # Увеличиваем здоровье
+        # скорость и здоровье с учётом дня
+        sp_min, sp_max = self.BASE_SPEED_RANGE
+        self.speed = random.randint(sp_min, sp_max) + (self.day - 1) * self.SPEED_PER_DAY
+        self.health = self.BASE_HEALTH + (self.day - 1) * self.HEALTH_PER_DAY
+
+        # остальные параметры
+        self.detection_radius = self.DETECTION_RADIUS
+        self.damage = self.DAMAGE
         self.direction = random.choice([-1, 0, 1])
         self.alerted = False
 
-        # Таймер атаки для каждого зомби
-        self.attack_timer = 0.0  # Таймер между атаками
-        self.attack_delay = 1.5  # Задержка между атаками в секундах
-        self.damage = 5  # Урон, наносимый зомби
+        # таймер атаки
+        self.attack_timer = 0.0
+        self.attack_delay = 1.5
 
     def move(self, player_pos):
         px, py = player_pos
-        # вектор от зомби к игроку
         to_player = Vector2(px, py) - self.pos
         dist = to_player.length()
 
-        # если ещё не был в состоянии chase и игрок в зоне — переключаемся
-        if not self.alerted and dist <= self.DETECTION_RADIUS:
+        # переключаем в погоню, если в зоне
+        if not self.alerted and dist <= self.detection_radius:
             self.alerted = True
 
-        if self.alerted:
-            # преследуем по вектору, масштабируя на full speed
-            if dist != 0:
-                direction = to_player.normalize()
-                self.pos += direction * self.speed
+        if self.alerted and dist != 0:
+            dir_vec = to_player.normalize()
+            self.pos += dir_vec * self.speed
         else:
-            # хаотичное движение влево с вертикальным дрейфом
+            # хаотичное движение
             self.pos.x -= self.speed
             if random.random() < 0.05:
                 self.direction = random.choice([-1, 0, 1])
             self.pos.y += self.direction * self.speed
 
-        # ограничения по Y
+        # ограничение по Y
         self.pos.y = max(self.VERTICAL_MIN, min(SCREEN_HEIGHT - self.size, self.pos.y))
-
-        # обновляем rect
         self.rect.topleft = (int(self.pos.x), int(self.pos.y))
 
     def draw(self):
