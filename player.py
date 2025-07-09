@@ -89,7 +89,7 @@ class Player:
             return True
         return False
 
-    def update(self, keys, dt=1/60.0):
+    def update(self, keys, dt=1 / 60.0):
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             self.rect.x -= self.speed
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
@@ -156,22 +156,22 @@ class Player:
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
-        
+
         # Отображение текста урона над игроком
         if self.damage_text and self.damage_timer > 0:
             font = pygame.font.Font(FONT_NAME, 40)
             damage_surface = font.render(self.damage_text, True, (255, 0, 0))  # Красный цвет
-            
+
             # Рассчитываем позицию текста над игроком
             text_x = self.rect.centerx - damage_surface.get_width() // 2
             text_y = self.rect.top - 30
-            
+
             # Анимация всплывания
             float_offset = int((1.0 - self.damage_timer) * 20)  # Текст всплывает вверх
             text_y -= float_offset
-            
+
             # Прозрачность текста (исчезает со временем)
             alpha = int(255 * self.damage_timer)
             damage_surface.set_alpha(alpha)
-            
+
             surface.blit(damage_surface, (text_x, text_y))

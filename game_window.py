@@ -1,21 +1,23 @@
 import pygame
 import os
-import random
-import math
 from config import *
 from player import Player
 from zombies import Zombie
 from pause_menu import PauseMenu
 from ui import Button
-from pygame.math import Vector2
-from wave_manager import WAVES_CONFIG
-from records_menu import RecordsScreen
 from upgrade_menu import UpgradeMenu
+from records_menu import RecordsScreen
+from wave_manager import WAVES_CONFIG
+
 
 class BloodEffect:
+    """
+    Анимация брызг крови из трёх кадров.
+    """
+
     def __init__(self, pos, frames, frame_time=0.08):
-        self.pos = pos            # центр эффекта (x,y)
-        self.frames = frames      # список Surface
+        self.pos = pos  # центр эффекта (x,y)
+        self.frames = frames  # список Surface
         self.frame_time = frame_time
         self.timer = 0.0
         self.current = 0
@@ -55,6 +57,7 @@ class GameWindow:
         self.background = self.load_background()
 
         self.zombies = []
+        self.dying_zombies = []
         self.zombie_spawn_timer = 0
 
         self.debug_font = pygame.font.Font(None, 30)
@@ -65,6 +68,19 @@ class GameWindow:
             SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 50,
             200, 60, "Exit", RED, (255, 150, 150)
         )
+
+        self.blood_frames = []
+        for i in (1, 2, 3):
+            path = os.path.join("assets", "images", f"blood_frame_{i}.png")
+            try:
+                img = pygame.image.load(path).convert_alpha()
+            except Exception as e:
+                print(f"Cannot load {path}: {e}")
+                img = pygame.Surface((20, 20), pygame.SRCALPHA)
+                pygame.draw.circle(img, (200, 0, 0), (10, 10), 10)
+            self.blood_frames.append(img)
+
+        self.blood_effects = []
 
         self.current_wave = 0
         self.zombies_to_spawn = 0
@@ -111,23 +127,6 @@ class GameWindow:
                 records = RecordsScreen(self.screen)
                 records.add_record(self.player_name, self.day, self.wave, self.money)
                 self.running = False
-            #self.background = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
-            #self.background.fill((50, 70, 90))
-
-        # списки зомби
-        self.zombies = []
-        self.dying_zombies = []    # <-- для «умирающих» зомби
-        self.zombie_spawn_timer = 0
-        self.game_paused = False
-        self.day = 1
-        self.wave = 1
-        self.money = 500
-        self.paused = False
-        self.current_wave = 0
-        self.zombies_to_spawn = 0
-        self.wave_timer = 0.0
-        self.day_completed = False
-        self.waves = WAVES_CONFIG.get(self.day, [])
 
     def show_upgrade_menu(self):
         menu = UpgradeMenu(self.screen, self.money, self.player)
@@ -143,32 +142,12 @@ class GameWindow:
     def toggle_pause(self):
         self.game_paused = not self.game_paused
 
-    def handle_pause(self):
-        if self.game_paused:
-            pause_menu = PauseMenu(self.screen)
-            result = pause_menu.run(self.background, self.player, self.zombies)
-
-        # Загрузка кадров крови
-        self.blood_frames = []
-        for i in (1, 2, 3):
-            path = os.path.join("assets", "images", f"blood_frame_{i}.png")
-            try:
-                img = pygame.image.load(path).convert_alpha()
-            except Exception as e:
-                print(f"Cannot load {path}: {e}")
-                img = pygame.Surface((20, 20), pygame.SRCALPHA)
-                pygame.draw.circle(img, (200,0,0), (10,10), 10)
-            self.blood_frames.append(img)
-
-        self.blood_effects = []
-
-        # шрифт для отладки
-        self.debug_font = pygame.font.Font(None, 30)
-
     def reset_game(self):
         self.game_over = False
         self.player = Player()  # Здесь skin не передаем, так как reset_game не вызывается после выбора скина
         self.zombies = []
+        self.dying_zombies = []
+        self.blood_effects = []
         self.zombie_spawn_timer = 0
         self.game_paused = False
         self.day = 1
@@ -180,6 +159,18 @@ class GameWindow:
         self.wave_timer = 0.0
         self.day_completed = False
         self.waves = WAVES_CONFIG.get(self.day, [])
+
+    def handle_pause(self):
+        if self.game_paused:
+            pause_menu = PauseMenu(self.screen)
+            result = pause_menu.run(self.background, self.player, self.zombies)
+
+            if result == "quit":
+                return False
+            elif result == "resume":
+                self.game_paused = False
+
+        return True
 
     def spawn_and_update_zombies(self, dt):
         if self.day_completed or self.game_over:
@@ -231,13 +222,6 @@ class GameWindow:
                     zombie.attack_timer = zombie.attack_delay
 
     def handle_bullet_zombie_collisions(self):
-        """
-        При попадании пули в зомби:
-         - создаём BloodEffect
-         - удаляем пулю
-         - зомби переводим в dying_zombies,
-           а из основного списка убираем
-        """
         for bullet in self.player.bullets[:]:
             for z in self.zombies[:]:
                 if bullet.rect.colliderect(z.rect):
@@ -247,17 +231,22 @@ class GameWindow:
                     self.blood_effects.append(eff)
 
                     if z.health <= 0:
+                        # Проверяем, что зомби еще не в списке умирающих
+                        already_dying = any(zombie == z for zombie, _ in self.dying_zombies)
+                        if not already_dying:
+                            self.dying_zombies.append((z, eff))
                         self.zombies.remove(z)
                         self.money += 10
-                        self.dying_zombies.append((z, eff))
                     break
 
-                    # удаляем пулю
-                    #self.player.bullets.remove(bullet)
-                    # зомби «переходит» в умирающие
-                    #self.zombies.remove(z)
-                    #self.dying_zombies.append((z, eff))
-                    #break
+    def update(self, dt):
+        if not self.game_paused and not self.game_over:
+            keys = pygame.key.get_pressed()
+            self.player.update(keys, dt)
+            self.player.update_bullets()
+            # Уменьшаем hurt_timer, если он больше 0
+            # if hasattr(self, 'hurt_timer') and self.hurt_timer > 0:
+            # self.hurt_timer -= dt
 
     def update_blood_effects(self, dt):
         for eff in self.blood_effects[:]:
@@ -269,46 +258,6 @@ class GameWindow:
                     if pair[1] is eff:
                         self.dying_zombies.remove(pair)
                         break
-
-
-
-    def handle_events(self):
-        mouse_pos = pygame.mouse.get_pos()
-        mouse_click = False
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.running = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    mouse_click = True
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    self.toggle_pause()
-                if event.key == pygame.K_p:
-                    self.toggle_pause()
-                if event.key == pygame.K_h:
-                    self.player.use_medkit()
-                if event.key == pygame.K_RETURN and self.day_completed:
-                    self.paused = True
-
-        if self.game_over:
-            self.exit_button.check_hover(mouse_pos)
-
-            if self.exit_button.is_clicked(mouse_pos, mouse_click):
-                records = RecordsScreen(self.screen)
-                records.add_record(self.player_name, self.day, self.wave, self.money)
-                self.running = False
-
-    def update(self, dt):
-        if not self.game_paused and not self.game_over:
-            keys = pygame.key.get_pressed()
-            self.player.update(keys, dt)
-            self.player.update_bullets()
-            # Уменьшаем hurt_timer, если он больше 0
-            #if hasattr(self, 'hurt_timer') and self.hurt_timer > 0:
-                #self.hurt_timer -= dt
-
 
     def draw_health_bar(self, x, y, width, height, current_health, max_health):
         border_rect = pygame.Rect(x - 2, y - 2, width + 4, height + 4)
@@ -337,14 +286,15 @@ class GameWindow:
     def draw(self):
         self.screen.blit(self.background, (0, 0))
         self.player.draw(self.screen)
-
-        # живые зомби
         for z in self.zombies:
             z.draw()
 
-        # умирающие (отрисовка зомби + эффекта крови)
         for z, eff in self.dying_zombies:
             z.draw()
+            eff.draw(self.screen)
+
+        # Отрисовываем эффекты крови
+        for eff in self.blood_effects:
             eff.draw(self.screen)
 
         font = pygame.font.Font(FONT_NAME, 30)
@@ -390,9 +340,9 @@ class GameWindow:
 
             go_font = pygame.font.Font(FONT_NAME, 80)
             go_surf = go_font.render("Game Over", True, RED)
-            x = SCREEN_WIDTH//2 - go_surf.get_width()//2
-            y = SCREEN_HEIGHT//2 - go_surf.get_height()//2
-            self.screen.blit(go_surf, (x,y))
+            x = SCREEN_WIDTH // 2 - go_surf.get_width() // 2
+            y = SCREEN_HEIGHT // 2 - go_surf.get_height() // 2 - 50
+            self.screen.blit(go_surf, (x, y))
 
             self.exit_button.draw(self.screen)
 
@@ -411,6 +361,7 @@ class GameWindow:
                     self.spawn_and_update_zombies(dt)
                     self.handle_bullet_zombie_collisions()
                     self.handle_collisions(dt)
+                    self.update_blood_effects(dt)
             elif self.paused:
                 if not self.show_upgrade_menu():
                     break
@@ -425,10 +376,4 @@ class GameWindow:
                     self.waves = WAVES_CONFIG.get(self.day, [])
                     self.zombies = []
 
-            if not self.game_over:
-                self.update(dt)
-                self.spawn_and_update_zombies(dt)
-                self.handle_bullet_zombie_collisions()
-                self.handle_collisions(dt)
-                self.update_blood_effects(dt)
             self.draw()

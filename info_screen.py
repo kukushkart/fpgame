@@ -56,4 +56,3 @@ class InfoScreen:
             self.clock.tick(60)
 
         return True
-
