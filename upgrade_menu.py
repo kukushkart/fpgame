@@ -11,27 +11,22 @@ class SavePopup:
         self.font_large = pygame.font.Font(FONT_NAME, FONT_SIZE - 5)
         self.font_medium = pygame.font.Font(FONT_NAME, FONT_SIZE - 15)
         self.font_small = pygame.font.Font(FONT_NAME, FONT_SIZE - 25)
-        
-        # Проверяем лимит сохранений
+
         self.save_manager = SaveManager()
         self.can_save = self.save_manager.can_create_save()
-        
-        # Сохраняем скриншот текущего экрана как фон
+
         self.background = screen.copy()
-        
-        # Размеры и позиция pop-up окна
+
         self.popup_width = 450
         self.popup_height = 300 if not self.can_save else 250
         self.popup_x = SCREEN_WIDTH // 2 - self.popup_width // 2
         self.popup_y = SCREEN_HEIGHT // 2 - self.popup_height // 2
-        
-        # Поле ввода для названия сохранения
+
         self.input_text = default_name
         self.input_active = True
         self.cursor_visible = True
         self.cursor_timer = 0
-        
-        # Кнопки
+
         save_color = GREEN if self.can_save else (100, 100, 100)
         save_hover_color = (150, 255, 150) if self.can_save else (120, 120, 120)
         
@@ -51,10 +46,9 @@ class SavePopup:
         while running:
             mouse_pos = pygame.mouse.get_pos()
             mouse_click = False
-            
-            # Обновляем курсор
+
             self.cursor_timer += 1
-            if self.cursor_timer >= 30:  # Мигание каждые 30 кадров
+            if self.cursor_timer >= 30:
                 self.cursor_visible = not self.cursor_visible
                 self.cursor_timer = 0
             
@@ -72,7 +66,6 @@ class SavePopup:
                     elif event.key == pygame.K_BACKSPACE:
                         self.input_text = self.input_text[:-1]
                     else:
-                        # Добавляем символ, если это печатный символ
                         if event.unicode.isprintable() and len(self.input_text) < 30:
                             self.input_text += event.unicode
             
@@ -85,38 +78,31 @@ class SavePopup:
             if self.save_button.is_clicked(mouse_pos, mouse_click):
                 if self.can_save and self.input_text.strip():
                     return self.input_text.strip()
-            
-            # Рисуем сохраненный фон
+
             self.screen.blit(self.background, (0, 0))
-            
-            # Рисуем полупрозрачную подложку
+
             overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
             overlay.set_alpha(128)
             overlay.fill((0, 0, 0))
             self.screen.blit(overlay, (0, 0))
-            
-            # Рисуем pop-up окно
+
             popup_rect = pygame.Rect(self.popup_x, self.popup_y, self.popup_width, self.popup_height)
             pygame.draw.rect(self.screen, (60, 60, 70), popup_rect)
             pygame.draw.rect(self.screen, WHITE, popup_rect, 3)
-            
-            # Заголовок
+
             title_text = self.font_large.render("Save Game", True, WHITE)
             title_rect = title_text.get_rect(center=(self.popup_x + self.popup_width // 2, self.popup_y + 40))
             self.screen.blit(title_text, title_rect)
-            
-            # Подсказка или сообщение о лимите
+
             if self.can_save:
                 hint_text = self.font_small.render("Enter save name:", True, (200, 200, 200))
                 hint_rect = hint_text.get_rect(center=(self.popup_x + self.popup_width // 2, self.popup_y + 80))
                 self.screen.blit(hint_text, hint_rect)
-                
-                # Поле ввода
+
                 input_rect = pygame.Rect(self.popup_x + 50, self.popup_y + 100, self.popup_width - 100, 40)
                 pygame.draw.rect(self.screen, WHITE, input_rect)
                 pygame.draw.rect(self.screen, BLACK, input_rect, 2)
             else:
-                # Сообщение о превышении лимита
                 limit_text1 = self.font_medium.render("Save limit reached!", True, RED)
                 limit_rect1 = limit_text1.get_rect(center=(self.popup_x + self.popup_width // 2, self.popup_y + 80))
                 self.screen.blit(limit_text1, limit_rect1)
@@ -128,23 +114,20 @@ class SavePopup:
                 limit_text3 = self.font_small.render("Please delete some saves first.", True, (200, 200, 200))
                 limit_rect3 = limit_text3.get_rect(center=(self.popup_x + self.popup_width // 2, self.popup_y + 140))
                 self.screen.blit(limit_text3, limit_rect3)
-            
-            # Текст в поле ввода (только если можно сохранить)
+
             if self.can_save:
                 input_surface = self.font_medium.render(self.input_text, True, BLACK)
                 input_text_rect = input_surface.get_rect()
                 input_text_rect.left = input_rect.left + 5
                 input_text_rect.centery = input_rect.centery
                 self.screen.blit(input_surface, input_text_rect)
-                
-                # Курсор
+
                 if self.cursor_visible:
                     cursor_x = input_text_rect.right + 2
                     cursor_y1 = input_rect.top + 5
                     cursor_y2 = input_rect.bottom - 5
                     pygame.draw.line(self.screen, BLACK, (cursor_x, cursor_y1), (cursor_x, cursor_y2), 2)
-            
-            # Рисуем кнопки
+
             self.save_button.draw(self.screen)
             self.cancel_button.draw(self.screen)
             
@@ -244,7 +227,7 @@ class UpgradePopup:
 
             if not self.can_buy and self.upgrade_info["name"] != "Coming soon":
                 warning_text = self.font_small.render("Not enough money!", True, RED)
-                warning_rect = warning_text.get_rect(center=(self.popup_x + self.popup_width // 2, self.popup_y + 180))
+                warning_rect = warning_text.get_rect(center=(self.popup_x + self.popup_width // 2, self.popup_y + 190))
                 self.screen.blit(warning_text, warning_rect)
 
             if self.upgrade_info["name"] == "Coming soon":
@@ -357,7 +340,6 @@ class UpgradeMenu:
             self.screen.blit(stat_text, (right_x, y_start + i * line_height))
 
     def draw_main_screen(self):
-        """Отрисовывает основной экран магазина"""
         self.screen.fill((30, 30, 40))
 
         self._draw_player_stats()
@@ -411,15 +393,12 @@ class UpgradeMenu:
             if self.main_menu_button.is_clicked(mouse_pos, mouse_click):
                 return "main_menu"
             if self.save_button.is_clicked(mouse_pos, mouse_click):
-                # Отрисовываем экран перед показом pop-up
                 self.draw_main_screen()
                 pygame.display.flip()
-                
-                # Дефолтное название сохранения
+
                 from datetime import datetime
                 default_name = f"{self.player_name}_Day{self.day}_Wave{self.wave}_{datetime.now().strftime('%m%d_%H%M')}"
-                
-                # Открываем pop-up для ввода названия
+
                 save_popup = SavePopup(self.screen, default_name)
                 save_name = save_popup.run()
                 

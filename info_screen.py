@@ -18,6 +18,8 @@ class InfoScreen:
             "WASD or arrows - movement",
             "Space - shooting",
             "ESC/p - pause",
+            "SHIFT - change direction",
+            "H - use medkit",
             "",
             "Authors: [Kukulyansky Raman and Paniavin Alexander]",
             "Version 1.0"

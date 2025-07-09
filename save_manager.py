@@ -7,13 +7,11 @@ class SaveManager:
         self.save_dir = "saves"
         self.save_file = "game_save.json"
         self.save_path = os.path.join(self.save_dir, self.save_file)
-        
-        # Создаем папку для сохранений если её нет
+
         if not os.path.exists(self.save_dir):
             os.makedirs(self.save_dir)
     
     def save_game(self, player, day, wave, money, player_name="", save_name="game_save"):
-        """Сохраняет текущее состояние игры"""
         save_data = {
             "save_name": save_name,
             "player_name": player_name,
@@ -36,8 +34,7 @@ class SaveManager:
             },
             "timestamp": datetime.now().isoformat()
         }
-        
-        # Используем пользовательское название для имени файла
+
         safe_name = "".join(c for c in save_name if c.isalnum() or c in (' ', '_', '-')).rstrip()
         save_file = f"{safe_name}.json"
         save_path = os.path.join(self.save_dir, save_file)
@@ -52,7 +49,6 @@ class SaveManager:
             return False
     
     def load_game(self):
-        """Загружает сохраненное состояние игры"""
         if not os.path.exists(self.save_path):
             print("No save file found")
             return None
@@ -67,11 +63,9 @@ class SaveManager:
             return None
     
     def has_save_file(self):
-        """Проверяет, существует ли файл сохранения"""
         return os.path.exists(self.save_path)
     
     def get_save_info(self):
-        """Получает информацию о сохранении без полной загрузки"""
         if not self.has_save_file():
             return None
         
@@ -92,7 +86,6 @@ class SaveManager:
             return None
     
     def get_all_saves(self):
-        """Получает список всех сохранений"""
         if not os.path.exists(self.save_dir):
             return []
         
@@ -115,13 +108,11 @@ class SaveManager:
                     })
                 except Exception as e:
                     print(f"Error reading save file {filename}: {e}")
-        
-        # Сортируем по времени (новые сверху)
+
         saves.sort(key=lambda x: x["timestamp"], reverse=True)
         return saves
     
     def load_save_by_filename(self, filename):
-        """Загружает сохранение по имени файла"""
         filepath = os.path.join(self.save_dir, filename)
         if not os.path.exists(filepath):
             print(f"Save file {filename} not found")
@@ -137,7 +128,6 @@ class SaveManager:
             return None
     
     def delete_save(self):
-        """Удаляет файл сохранения"""
         if os.path.exists(self.save_path):
             try:
                 os.remove(self.save_path)
@@ -149,7 +139,6 @@ class SaveManager:
         return False
     
     def delete_save_by_filename(self, filename):
-        """Удаляет сохранение по имени файла"""
         filepath = os.path.join(self.save_dir, filename)
         if os.path.exists(filepath):
             try:
@@ -162,9 +151,7 @@ class SaveManager:
         return False
     
     def get_save_count(self):
-        """Возвращает количество сохранений"""
         return len(self.get_all_saves())
     
     def can_create_save(self):
-        """Проверяет, можно ли создать новое сохранение (лимит 6)"""
         return self.get_save_count() < 6

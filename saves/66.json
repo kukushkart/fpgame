@@ -1,13 +1,13 @@
 {
-  "save_name": "wad_Day1_Wave2_0709_2240",
-  "player_name": "wad",
-  "day": 1,
-  "wave": 2,
-  "money": 280,
+  "save_name": "66",
+  "player_name": "\u0446\u0432",
+  "day": 2,
+  "wave": 1,
+  "money": 30,
   "player": {
     "health": 100,
     "max_health": 100,
-    "damage": 10,
+    "damage": 15,
     "speed": 4,
     "shoot_delay": 20,
     "reload_time": 2.0,
@@ -16,7 +16,7 @@
     "medkits": 0,
     "facing_right": true,
     "ammo_capacity_bought": true,
-    "skin_path": "assets/images/test_survivor_v2.png"
+    "skin_path": "assets/images/test_survivor.png"
   },
-  "timestamp": "2025-07-09T22:40:49.559461"
+  "timestamp": "2025-07-09T23:03:30.996545"
 }
