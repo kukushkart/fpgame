@@ -6,15 +6,21 @@ import math
 from pygame.math import Vector2
 from config import *
 
+
 class Zombie:
-    # Параметры по умолчанию (можно переопределить в подклассе)
-    BASE_SPEED_RANGE = (1, 2)      # мин и макс рандомной скорости
-    SPEED_PER_DAY = 0.5            # добавляется к скорости за каждый день
-    BASE_HEALTH = 50               # здоровье на 1-й день
-    HEALTH_PER_DAY = 10            # прирост здоровья за день
-    DETECTION_RADIUS = 300         # радиус обнаружения
-    DAMAGE = 5                     # урон по игроку
-    VERTICAL_MIN = 500             # минимальная Y-координата
+    # параметры по умолчанию
+    BASE_SPEED_RANGE = (1, 2)
+    SPEED_PER_DAY = 0.5
+    BASE_HEALTH = 50
+    HEALTH_PER_DAY = 10
+    DETECTION_RADIUS = 300
+    DAMAGE = 5
+
+    # старая минимальная высота
+    VERTICAL_MIN = 500
+    # новая ВЕРХНЯЯ И НИЖНЯЯ границы для y:
+    # zombies теперь могут появляться и ходить только между VERTICAL_MIN и VERTICAL_MAX
+    VERTICAL_MAX = SCREEN_HEIGHT - ZOMBIE_SIZE - 50
 
     def __init__(self, screen, day=1):
         self.screen = screen
@@ -31,17 +37,17 @@ class Zombie:
         self.image = pygame.transform.smoothscale(self.original_image, (self.size, self.size))
         self.rect = self.image.get_rect()
 
+        # вместо SCREEN_HEIGHT - self.size
+        self.rect.y = random.randint(self.VERTICAL_MIN, self.VERTICAL_MAX)
         self.rect.x = SCREEN_WIDTH
-        self.rect.y = random.randint(self.VERTICAL_MIN, SCREEN_HEIGHT - self.size)
 
         self.pos = Vector2(self.rect.topleft)
 
-        # скорость и здоровье с учётом дня
+        # скорость и здоровье
         sp_min, sp_max = self.BASE_SPEED_RANGE
-        self.speed = random.randint(sp_min, sp_max) + (self.day - 1) * self.SPEED_PER_DAY
-        self.health = self.BASE_HEALTH + (self.day - 1) * self.HEALTH_PER_DAY
+        self.speed = random.randint(sp_min, sp_max) + (day - 1) * self.SPEED_PER_DAY
+        self.health = self.BASE_HEALTH + (day - 1) * self.HEALTH_PER_DAY
 
-        # остальные параметры
         self.detection_radius = self.DETECTION_RADIUS
         self.damage = self.DAMAGE
         self.direction = random.choice([-1, 0, 1])
@@ -49,8 +55,6 @@ class Zombie:
 
         self.attack_timer = 0.0
         self.attack_delay = 1.5
-        self.damage = 5
-
 
     def move(self, player_pos):
         px, py = player_pos
@@ -69,7 +73,9 @@ class Zombie:
                 self.direction = random.choice([-1, 0, 1])
             self.pos.y += self.direction * self.speed
 
-        self.pos.y = max(self.VERTICAL_MIN, min(SCREEN_HEIGHT - self.size, self.pos.y))
+        # теперь «клинуем» y именно между VERTICAL_MIN и VERTICAL_MAX
+        self.pos.y = max(self.VERTICAL_MIN,
+                         min(self.VERTICAL_MAX, self.pos.y))
 
         self.rect.topleft = (int(self.pos.x), int(self.pos.y))
 
