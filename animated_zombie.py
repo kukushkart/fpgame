@@ -7,8 +7,8 @@ from config import ZOMBIE_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT
 from zombies import Zombie
 
 class AnimatedZombie(Zombie):
-    FRAMES = []         # базовые кадры (например, «левая» анимация)
-    FRAMES_LEFT = []    # при желании можно указать пути к «правой» анимации
+    FRAMES = []
+    FRAMES_LEFT = []
     FRAME_TIME = 0.15
 
     def __init__(self, screen, day=1):

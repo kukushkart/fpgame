@@ -30,11 +30,11 @@ class GreenZombie(AnimatedZombie):
         "assets/images/з2ле.png",
         "assets/images/з3ле.png",
     ]
-    # FRAMES_LEFT = [  # сюда «обратные» кадры
-    #     "assets/images/з1пр.png",
-    #     "assets/images/з2пр.png",
-    #     "assets/images/з3пр.png",
-    # ]
+    FRAMES_LEFT = [  # сюда «обратные» кадры
+         "assets/images/з1пр.png",
+         "assets/images/з2пр.png",
+         "assets/images/з3пр.png",
+     ]
     FRAME_TIME = 0.12
 
 class PurpleZombie(AnimatedZombie):
@@ -43,11 +43,11 @@ class PurpleZombie(AnimatedZombie):
         "assets/images/ф2ле.png",
         "assets/images/ф3ле.png",
     ]
-    # FRAMES_LEFT = [  # сюда «обратные» кадры
-    #     "assets/images/ф1пр.png",
-    #     "assets/images/ф2пр.png",
-    #     "assets/images/ф3пр.png",
-    # ]
+    FRAMES_LEFT = [  # сюда «обратные» кадры
+         "assets/images/ф1пр.png",
+         "assets/images/ф2пр.png",
+         "assets/images/ф3пр.png",
+     ]
     FRAME_TIME = 0.12
 
 class RedZombie(AnimatedZombie):
@@ -56,11 +56,11 @@ class RedZombie(AnimatedZombie):
         "assets/images/к2ле.png",
         "assets/images/к3ле.png",
     ]
-    # FRAMES_LEFT = [  # сюда «обратные» кадры
-    #     "assets/images/к1пр.png",
-    #     "assets/images/к2пр.png",
-    #     "assets/images/к3пр.png",
-    # ]
+    FRAMES_LEFT = [  # сюда «обратные» кадры
+         "assets/images/к1пр.png",
+         "assets/images/к2пр.png",
+         "assets/images/к3пр.png",
+     ]
     FRAME_TIME = 0.12
 
 class LimeZombie(AnimatedZombie):
@@ -69,11 +69,11 @@ class LimeZombie(AnimatedZombie):
         "assets/images/с2ле.png",
         "assets/images/с3ле.png",
     ]
-    # FRAMES_LEFT = [  # сюда «обратные» кадры
-    #     "assets/images/с1пр.png",
-    #     "assets/images/с2пр.png",
-    #     "assets/images/с3пр.png",
-    # ]
+    FRAMES_LEFT = [  # сюда «обратные» кадры
+         "assets/images/с1пр.png",
+         "assets/images/с2пр.png",
+         "assets/images/с3пр.png",
+     ]
     FRAME_TIME = 0.12
 
 class HatZombie(AnimatedZombie):
@@ -82,11 +82,11 @@ class HatZombie(AnimatedZombie):
         "assets/images/шл2ле.png",
         "assets/images/шл3ле.png",
     ]
-    # FRAMES_LEFT = [  # сюда «обратные» кадры
-    #     "assets/images/шл1пр.png",
-    #     "assets/images/шл2пр.png",
-    #     "assets/images/шл3пр.png",
-    # ]
+    FRAMES_LEFT = [  # сюда «обратные» кадры
+         "assets/images/шл1пр.png",
+         "assets/images/шл2пр.png",
+         "assets/images/шл3пр.png",
+     ]
     FRAME_TIME = 0.12
 
 class CyanZombie(AnimatedZombie):
@@ -95,11 +95,11 @@ class CyanZombie(AnimatedZombie):
         "assets/images/ц2ле.png",
         "assets/images/ц3ле.png",
     ]
-    # FRAMES_LEFT = [  # сюда «обратные» кадры
-    #     "assets/images/ц1пр.png",
-    #     "assets/images/ц2пр.png",
-    #     "assets/images/ц3пр.png",
-    # ]
+    FRAMES_LEFT = [  # сюда «обратные» кадры
+         "assets/images/ц1пр.png",
+         "assets/images/ц2пр.png",
+         "assets/images/ц3пр.png",
+     ]
     FRAME_TIME = 0.12
 
 class VioletZombie(AnimatedZombie):
@@ -108,9 +108,9 @@ class VioletZombie(AnimatedZombie):
         "assets/images/л2ле.png",
         "assets/images/л3ле.png",
     ]
-    # FRAMES_LEFT = [  # сюда «обратные» кадры
-    #     "assets/images/л1пр.png",
-    #     "assets/images/л2пр.png",
-    #     "assets/images/л3пр.png",
-    # ]
+    FRAMES_LEFT = [  # сюда «обратные» кадры
+         "assets/images/л1пр.png",
+         "assets/images/л2пр.png",
+         "assets/images/л3пр.png",
+     ]
     FRAME_TIME = 0.12
