@@ -16,11 +16,11 @@ class BlueZombie(AnimatedZombie):
         "assets/images/гт3ле.png",
     ]
 
-    # FRAMES_LEFT = [  # сюда «обратные» кадры
-    #     "assets/images/гт1пр.png",
-    #     "assets/images/гт2пр.png",
-    #     "assets/images/гт3пр.png",
-    # ]
+    FRAMES_LEFT = [  # сюда «обратные» кадры
+         "assets/images/гт1пр.png",
+         "assets/images/гт2пр.png",
+         "assets/images/гт3пр.png",
+     ]
 
     FRAME_TIME = 0.12
 
