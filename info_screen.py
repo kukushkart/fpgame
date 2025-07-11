@@ -15,12 +15,12 @@ class InfoScreen:
         self.zombie_info = [
             {"image": "з2пр.png", "name": "Green zombie","description": "Classical zombie.\nMedium speed and health.\nMinimal damage."},
             {"image": "с2пр.png", "name": "Lime zombie","description": "Same as green zombie just another skin\nIbplup.\nAemduwe."},
-            {"image": "л2пр.png", "name": "Violet zombie","description": "Редкий зомби с особыми\nспособностями.\nВысокая скорость атаки."},
-            {"image": "гт2пр.png", "name": "Blue zombie", "description": "Быстрый и агрессивный зомби.\nИмеет среднее здоровье.\nНаносит умеренный урон."},
-            {"image": "к2пр.png", "name": "Red zombie", "description": "Опасный зомби с высоким уроном.\nБольшое количество здоровья.\nМедленная скорость."},
-            {"image": "ф2пр.png", "name": "Purple zombie", "description": "Мощный зомби с высоким\nуроном.\nМедленная скорость."},
-            {"image": "ц2пр.png", "name": "Cyan zombie", "description": "Быстрый зомби с низким\nздоровьем.\nВысокая скорость."},
-            {"image": "шл2пр.png", "name": "Zombie with a hat", "description": "Элитный зомби с броней.\nВысокое здоровье и урон.\nСредняя скорость."}
+            {"image": "л2пр.png", "name": "Violet zombie","description": "Blablabla\nBlebleble.\nBlublublu."},
+            {"image": "гт2пр.png", "name": "Blue zombie", "description": "Hapblublblublu.\nTuntuntun.\nTuntuntun Tuntuntun Tuntuntun."},
+            {"image": "к2пр.png", "name": "Red zombie", "description": "Tuntuntun.\nTuntuntun.\nTuntuntun."},
+            {"image": "ф2пр.png", "name": "Purple zombie", "description": "Tuntuntun\nTuntuntun.\nTuntuntun."},
+            {"image": "ц2пр.png", "name": "Cyan zombie", "description": "Tuntuntun\nTuntuntun.\nTuntuntun."},
+            {"image": "шл2пр.png", "name": "Zombie with a hat", "description": "Tuntuntun.\nTuntuntun Tuntuntun Tuntuntun Tuntuntun.\nSahur."}
         ]
         self.zombie_images = {}
         for zombie in self.zombie_info:
