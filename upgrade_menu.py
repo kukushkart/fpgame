@@ -2,6 +2,7 @@ import pygame
 from config import *
 from ui import Button
 from save_manager import SaveManager
+from manage_saves_popup import ManageSavesPopup
 
 
 class SavePopup:
@@ -395,6 +396,15 @@ class UpgradeMenu:
             if self.save_button.is_clicked(mouse_pos, mouse_click):
                 self.draw_main_screen()
                 pygame.display.flip()
+
+                # Проверяем лимит сохранений
+                if not self.save_manager.can_create_save():
+                    # Показываем меню управления сохранениями
+                    manage_saves_popup = ManageSavesPopup(self.screen, self.save_manager)
+                    result = manage_saves_popup.run()
+                    
+                    if result != "continue":
+                        continue  # Пользователь отменил или закрыл меню
 
                 from datetime import datetime
                 default_name = f"{self.player_name}_Day{self.day}_Wave{self.wave}_{datetime.now().strftime('%m%d_%H%M')}"

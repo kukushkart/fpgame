@@ -9,6 +9,7 @@ class BlueZombie(AnimatedZombie):
     HEALTH_PER_DAY = 15
     DETECTION_RADIUS = 350
     DAMAGE = 10
+    REWARD = 15  # Базовая награда за убийство
 
     FRAMES = [
         "assets/images/гт1ле.png",
@@ -31,6 +32,7 @@ class GreenZombie(AnimatedZombie):
     HEALTH_PER_DAY = 15
     DETECTION_RADIUS = 350
     DAMAGE = 5
+    REWARD = 20  # Больше HP = больше награда
 
     FRAMES = [
         "assets/images/з1ле.png",
@@ -51,6 +53,7 @@ class PurpleZombie(AnimatedZombie):
     HEALTH_PER_DAY = 15
     DETECTION_RADIUS = 300
     DAMAGE = 7
+    REWARD = 25  # Высокое HP = высокая награда
 
     FRAMES = [
         "assets/images/ф1ле.png",
@@ -71,6 +74,7 @@ class RedZombie(AnimatedZombie):
     HEALTH_PER_DAY = 15
     DETECTION_RADIUS = 300
     DAMAGE = 7
+    REWARD = 25  # Высокое HP = высокая награда
 
     FRAMES = [
         "assets/images/к1ле.png",
@@ -91,6 +95,7 @@ class LimeZombie(AnimatedZombie):
     HEALTH_PER_DAY = 15
     DETECTION_RADIUS = 350
     DAMAGE = 5
+    REWARD = 20  # Средние статы = средняя награда
 
     FRAMES = [
         "assets/images/с1ле.png",
@@ -111,6 +116,7 @@ class HatZombie(AnimatedZombie):
     HEALTH_PER_DAY = 15
     DETECTION_RADIUS = 350
     DAMAGE = 5
+    REWARD = 22  # Умеренная награда за средние статы
 
     FRAMES = [
         "assets/images/шл1ле.png",
@@ -131,6 +137,7 @@ class CyanZombie(AnimatedZombie):
     HEALTH_PER_DAY = 15
     DETECTION_RADIUS = 350
     DAMAGE = 5
+    REWARD = 22  # Умеренная награда за средние статы
 
     FRAMES = [
         "assets/images/ц1ле.png",
@@ -151,6 +158,7 @@ class VioletZombie(AnimatedZombie):
     HEALTH_PER_DAY = 15
     DETECTION_RADIUS = 350
     DAMAGE = 10
+    REWARD = 15  # Низкое HP, но быстрый и опасный
 
     FRAMES = [
         "assets/images/л1ле.png",

@@ -1,11 +1,11 @@
 {
-  "save_name": "66",
-  "player_name": "\u0446\u0432",
+  "save_name": "oo_Day2_Wave1_0711_0431",
+  "player_name": "oo",
   "day": 2,
   "wave": 1,
-  "money": 30,
+  "money": 117,
   "player": {
-    "health": 100,
+    "health": 90,
     "max_health": 100,
     "damage": 15,
     "speed": 4,
@@ -16,7 +16,7 @@
     "medkits": 0,
     "facing_right": true,
     "ammo_capacity_bought": true,
-    "skin_path": "assets/images/test_survivor.png"
+    "skin_path": "assets/images/pixel_pers_static.png"
   },
-  "timestamp": "2025-07-09T23:03:30.996545"
+  "timestamp": "2025-07-11T04:31:18.720685"
 }

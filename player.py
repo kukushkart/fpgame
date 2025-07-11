@@ -193,8 +193,8 @@ class Player:
 
         self.rect.left = max(0, self.rect.left)
         self.rect.right = min(830, self.rect.right)
-        self.rect.top = max(458, self.rect.top)
-        self.rect.bottom = min(SCREEN_HEIGHT, self.rect.bottom)
+        self.rect.top = max(500, self.rect.top)
+        self.rect.bottom = min(SCREEN_HEIGHT - 40, self.rect.bottom)
 
         if self.damage_timer > 0:
             self.damage_timer -= dt

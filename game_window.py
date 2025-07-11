@@ -293,7 +293,10 @@ class GameWindow:
                         if not already_dying:
                             self.dying_zombies.append((z, eff))
                         self.zombies.remove(z)
-                        self.money += 10 + 5 * (self.day - 1)
+                        # Используем индивидуальную награду зомби плюс бонус за день
+                        base_reward = getattr(z.__class__, 'REWARD', 10)  # fallback к 10 если REWARD не определен
+                        day_bonus = 5 * (self.day - 1)
+                        self.money += base_reward + day_bonus
                     break
 
     def update(self, dt):
