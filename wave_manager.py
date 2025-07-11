@@ -1,5 +1,4 @@
 import pygame
-
 WAVES_CONFIG = {
     1: [
         {"zombie_count": 4, "delay": 5},

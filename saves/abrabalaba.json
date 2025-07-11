@@ -1,11 +1,11 @@
 {
-  "save_name": "oo_Day2_Wave1_0711_0431",
-  "player_name": "oo",
+  "save_name": "abrabalaba",
+  "player_name": "sdf",
   "day": 2,
   "wave": 1,
-  "money": 117,
+  "money": 118,
   "player": {
-    "health": 90,
+    "health": 100,
     "max_health": 100,
     "damage": 15,
     "speed": 4,
@@ -18,5 +18,5 @@
     "ammo_capacity_bought": true,
     "skin_path": "assets/images/pixel_pers_static.png"
   },
-  "timestamp": "2025-07-11T04:31:18.720685"
+  "timestamp": "2025-07-11T05:10:39.653465"
 }
