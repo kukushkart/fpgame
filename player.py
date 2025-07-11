@@ -4,28 +4,47 @@ from bullet import Bullet
 
 
 class Player:
-    def __init__(self, skin="assets/images/test_survivor.png"):
+    def __init__(self, skin="assets/images/pixel_pers_static.png"):
         self.skin_path = skin
-
+        
+        # Load all animation frames
         try:
-            self.original_image_right = pygame.image.load(skin).convert_alpha()
-        except:
-            print("Invalid creating survivor attempt! Making smth else")
-            self.original_image_right = pygame.Surface((100, 100), pygame.SRCALPHA)
-            pygame.draw.circle(self.original_image_right, (255, 0, 0), (50, 50), 50)
-
-        reverse_skin = skin.replace(".png", "_reverse.png")
-        try:
-            self.original_image_left = pygame.image.load(reverse_skin).convert_alpha()
-        except:
-            print(f"Reverse skin not found: {reverse_skin}. Using flipped image")
-
-            self.original_image_left = pygame.transform.flip(self.original_image_right, True, False)
-
-        self.image_right = pygame.transform.smoothscale(self.original_image_right, (150, 150))
-        self.image_left = pygame.transform.smoothscale(self.original_image_left, (150, 150))
-
-        self.image = self.image_right
+            # Static frames
+            self.static_right = pygame.image.load("assets/images/pixel_pers_static.png").convert_alpha()
+            self.static_left = pygame.image.load("assets/images/pixel_pers_static_reverse.png").convert_alpha()
+            
+            # Movement frames
+            self.mov_1_right = pygame.image.load("assets/images/pixel_pers_mov_1.png").convert_alpha()
+            self.mov_1_left = pygame.image.load("assets/images/pixel_pers_mov_1_reverse.png").convert_alpha()
+            self.mov_2_right = pygame.image.load("assets/images/pixel_pers_mov_2.png").convert_alpha()
+            self.mov_2_left = pygame.image.load("assets/images/pixel_pers_mov_2_reverse.png").convert_alpha()
+            
+        except Exception as e:
+            print(f"Error loading player sprites: {e}. Using fallback.")
+            # Create fallback sprites
+            self.static_right = pygame.Surface((110, 110), pygame.SRCALPHA)
+            pygame.draw.circle(self.static_right, (255, 0, 0), (55, 55), 55)
+            self.static_left = pygame.transform.flip(self.static_right, True, False)
+            self.mov_1_right = self.static_right.copy()
+            self.mov_1_left = self.static_left.copy()
+            self.mov_2_right = self.static_right.copy()
+            self.mov_2_left = self.static_left.copy()
+        
+        # Scale all sprites
+        self.static_right = pygame.transform.smoothscale(self.static_right, (110, 110))
+        self.static_left = pygame.transform.smoothscale(self.static_left, (110, 110))
+        self.mov_1_right = pygame.transform.smoothscale(self.mov_1_right, (110, 110))
+        self.mov_1_left = pygame.transform.smoothscale(self.mov_1_left, (110, 110))
+        self.mov_2_right = pygame.transform.smoothscale(self.mov_2_right, (110, 110))
+        self.mov_2_left = pygame.transform.smoothscale(self.mov_2_left, (110, 110))
+        
+        # Animation variables
+        self.animation_timer = 0
+        self.animation_speed = 10  # frames between animation changes
+        self.animation_frame = 0  # 0 = mov_1, 1 = mov_2
+        self.is_moving = False
+        
+        self.image = self.static_right
         self.rect = self.image.get_rect()
         self.rect.midbottom = (SCREEN_WIDTH // 2, SCREEN_HEIGHT - 20)
 
@@ -64,7 +83,7 @@ class Player:
     
     def flip_direction(self):
         self.facing_right = not self.facing_right
-        self.image = self.image_right if self.facing_right else self.image_left
+        self.update_sprite()
 
     def apply_upgrade(self, upgrade_name):
         if upgrade_name == "Strength":
@@ -107,7 +126,20 @@ class Player:
             return True
         return False
 
+    def update_sprite(self):
+        """Update the current sprite based on movement and direction"""
+        if self.is_moving:
+            # Use animation frames
+            if self.facing_right:
+                self.image = self.mov_1_right if self.animation_frame == 0 else self.mov_2_right
+            else:
+                self.image = self.mov_1_left if self.animation_frame == 0 else self.mov_2_left
+        else:
+            # Use static frames
+            self.image = self.static_right if self.facing_right else self.static_left
+    
     def update(self, keys, dt=1/60.0):
+        # Check for direction flip
         if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
             if not hasattr(self, 'shift_pressed') or not self.shift_pressed:
                 self.flip_direction()
@@ -115,14 +147,35 @@ class Player:
         else:
             self.shift_pressed = False
         
+        # Check for movement
+        moving = False
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             self.rect.x -= self.speed
+            moving = True
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             self.rect.x += self.speed
+            moving = True
         if keys[pygame.K_UP] or keys[pygame.K_w]:
             self.rect.y -= self.speed
+            moving = True
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             self.rect.y += self.speed
+            moving = True
+        
+        self.is_moving = moving
+        
+        # Update animation
+        if self.is_moving:
+            self.animation_timer += 1
+            if self.animation_timer >= self.animation_speed:
+                self.animation_timer = 0
+                self.animation_frame = 1 - self.animation_frame  # Toggle between 0 and 1
+        else:
+            self.animation_timer = 0
+            self.animation_frame = 0
+        
+        # Update sprite
+        self.update_sprite()
 
         if keys[pygame.K_r] and not self.is_reloading and self.current_ammo < self.magazine_size:
             self.start_reload()

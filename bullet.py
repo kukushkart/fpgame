@@ -17,7 +17,7 @@ class Bullet:
             pygame.draw.ellipse(self.image, (255, 215, 0), (0, 0, 30, 10))
 
         self.rect = self.image.get_rect()
-        self.rect.midleft = (x - 22 if direction == 1 else x, y - 28)
+        self.rect.midleft = (x - 9 if direction == 1 else x, y - 4)
 
     def update(self):
         self.rect.x += self.speed * self.direction

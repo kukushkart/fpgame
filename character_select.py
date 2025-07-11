@@ -11,23 +11,17 @@ class CharacterSelectScreen:
         self.small_font = pygame.font.Font(FONT_NAME, FONT_SIZE - 20)
 
         try:
-            self.skin1 = pygame.image.load("assets/images/test_survivor.png").convert_alpha()
-            self.skin2 = pygame.image.load("assets/images/test_survivor_v2.png").convert_alpha()
+            self.skin = pygame.image.load("assets/images/pixel_pers_static.png").convert_alpha()
         except Exception as e:
             print(f"Cannot load character skins: {e}. Using fallback.")
-            self.skin1 = pygame.Surface((150, 150), pygame.SRCALPHA)
-            pygame.draw.circle(self.skin1, (255, 0, 0), (75, 75), 75)
-            self.skin2 = pygame.Surface((150, 150), pygame.SRCALPHA)
-            pygame.draw.circle(self.skin2, (0, 255, 0), (75, 75), 75)
+            self.skin = pygame.Surface((120, 120), pygame.SRCALPHA)
+            pygame.draw.circle(self.skin, (255, 0, 0), (60, 60), 60)
 
-        self.skin1 = pygame.transform.smoothscale(self.skin1, (150, 150))
-        self.skin2 = pygame.transform.smoothscale(self.skin2, (150, 150))
+        self.skin = pygame.transform.smoothscale(self.skin, (120, 120))
 
-        self.skin1_rect = pygame.Rect(SCREEN_WIDTH // 4 - 75, SCREEN_HEIGHT // 2 - 75, 150, 150)
-        self.skin2_rect = pygame.Rect(3 * SCREEN_WIDTH // 4 - 75, SCREEN_HEIGHT // 2 - 75, 150, 150)
+        self.skin_rect = pygame.Rect(SCREEN_WIDTH // 2 - 60, SCREEN_HEIGHT // 2 - 60, 120, 120)
 
-        self.skin1_border = pygame.Rect(SCREEN_WIDTH // 4 - 80, SCREEN_HEIGHT // 2 - 80, 160, 160)
-        self.skin2_border = pygame.Rect(3 * SCREEN_WIDTH // 4 - 80, SCREEN_HEIGHT // 2 - 80, 160, 160)
+        self.skin_border = pygame.Rect(SCREEN_WIDTH // 2 - 65, SCREEN_HEIGHT // 2 - 65, 130, 130)
 
         self.start_button = Button(
             SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT - 170,
@@ -38,7 +32,7 @@ class CharacterSelectScreen:
             300, 60, "Return", RED, (255, 150, 150)
         )
 
-        self.selected_skin = None
+        self.selected_skin = "assets/images/pixel_pers_static.png"
         self.color_active = pygame.Color('lightskyblue3')
         self.color_passive = pygame.Color('gray15')
 
@@ -53,10 +47,8 @@ class CharacterSelectScreen:
                     return None
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     mouse_click = True
-                    if self.skin1_rect.collidepoint(mouse_pos):
-                        self.selected_skin = "assets/images/test_survivor.png"
-                    elif self.skin2_rect.collidepoint(mouse_pos):
-                        self.selected_skin = "assets/images/test_survivor_v2.png"
+                    if self.skin_rect.collidepoint(mouse_pos):
+                        self.selected_skin = "assets/images/pixel_pers_static.png"
 
             self.start_button.check_hover(mouse_pos)
             self.return_button.check_hover(mouse_pos)
@@ -75,22 +67,13 @@ class CharacterSelectScreen:
             title = self.font.render("Select Your Character", True, WHITE)
             self.screen.blit(title, (SCREEN_WIDTH // 2 - title.get_width() // 2, SCREEN_HEIGHT // 2 - 200))
 
-            pygame.draw.rect(self.screen,
-                             self.color_active if self.selected_skin == "assets/images/test_survivor.png" else self.color_passive,
-                             self.skin1_border, 2, border_radius=10)
-            pygame.draw.rect(self.screen,
-                             self.color_active if self.selected_skin == "assets/images/test_survivor_v2.png" else self.color_passive,
-                             self.skin2_border, 2, border_radius=10)
+            pygame.draw.rect(self.screen, self.color_active, self.skin_border, 2, border_radius=10)
 
-            self.screen.blit(self.skin1, self.skin1_rect)
-            self.screen.blit(self.skin2, self.skin2_rect)
+            self.screen.blit(self.skin, self.skin_rect)
 
-            skin1_label = self.small_font.render("Kukulyanskiy Raman", True, WHITE)
-            skin2_label = self.small_font.render("Paniavin Alexander", True, WHITE)
-            self.screen.blit(skin1_label,
-                             (SCREEN_WIDTH // 4 - skin1_label.get_width() // 2, self.skin1_rect.bottom + 10))
-            self.screen.blit(skin2_label,
-                             (3 * SCREEN_WIDTH // 4 - skin2_label.get_width() // 2, self.skin2_rect.bottom + 10))
+            skin_label = self.small_font.render("Your Character", True, WHITE)
+            self.screen.blit(skin_label,
+                             (SCREEN_WIDTH // 2 - skin_label.get_width() // 2, self.skin_rect.bottom + 10))
 
             self.start_button.draw(self.screen)
             self.return_button.draw(self.screen)
