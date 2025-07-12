@@ -14,13 +14,13 @@ class InfoScreen:
         self.back_button = Button(SCREEN_WIDTH - 120, SCREEN_HEIGHT - 70, 100, 50, "Back", RED, (255, 150, 150))
         self.zombie_info = [
             {"image": "з2пр.png", "name": "Green zombie","description": "Classical zombie.\nMedium speed and health.\nMinimal damage."},
-            {"image": "с2пр.png", "name": "Lime zombie","description": "Same as green zombie just another skin\nIbplup.\nAemduwe."},
-            {"image": "л2пр.png", "name": "Violet zombie","description": "Blablabla\nBlebleble.\nBlublublu."},
-            {"image": "гт2пр.png", "name": "Blue zombie", "description": "Hapblublblublu.\nTuntuntun.\nTuntuntun Tuntuntun Tuntuntun."},
-            {"image": "к2пр.png", "name": "Red zombie", "description": "Tuntuntun.\nTuntuntun.\nTuntuntun."},
-            {"image": "ф2пр.png", "name": "Purple zombie", "description": "Tuntuntun\nTuntuntun.\nTuntuntun."},
-            {"image": "ц2пр.png", "name": "Cyan zombie", "description": "Tuntuntun\nTuntuntun.\nTuntuntun."},
-            {"image": "шл2пр.png", "name": "Zombie with a hat", "description": "Tuntuntun.\nTuntuntun Tuntuntun Tuntuntun Tuntuntun.\nSahur."}
+            {"image": "с2пр.png", "name": "Lime zombie","description": "Classical zombie.\nMedium speed and health.\nMinimal damage."},
+            {"image": "л2пр.png", "name": "Violet zombie","description": "Unknown zombie.\nrandom???\nrandom???"},
+            {"image": "гт2пр.png", "name": "Blue zombie", "description": "Smart zombie\n.Large Detection Radius, Medium speed and health\nMedium damage."},
+            {"image": "к2пр.png", "name": "Red zombie", "description": "Strong zombie.\nLess speed, more health.\nMedium damage."},
+            {"image": "ф2пр.png", "name": "Purple zombie", "description": "Strong zombie\nLess speed, more health.\nMedium damage."},
+            {"image": "ц2пр.png", "name": "Cyan zombie", "description": "Smart zombie\n.Large Detection Radius, Medium speed and health\nMedium damage."},
+            {"image": "шл2пр.png", "name": "Zombie with a hat", "description": "Fast zombie.\nMore speed, less health.\nMaximum damage."}
         ]
         self.zombie_images = {}
         for zombie in self.zombie_info:
