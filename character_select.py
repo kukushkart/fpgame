@@ -18,7 +18,7 @@ class CharacterSelectScreen:
         self.skin_border = pygame.Rect(SCREEN_WIDTH // 2 - 65, SCREEN_HEIGHT // 2 - 65, 130, 130)
         self.start_button = Button(
             SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT - 170,
-            300, 60, "Start Game", GREEN, (150, 255, 150)
+            300, 60, "Start The Game", GREEN, (150, 255, 150)
         )
         self.return_button = Button(
             SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT - 100,

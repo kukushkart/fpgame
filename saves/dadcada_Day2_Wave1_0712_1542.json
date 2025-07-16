@@ -1,0 +1,22 @@
+{
+  "save_name": "dadcada_Day2_Wave1_0712_1542",
+  "player_name": "dadcada",
+  "day": 2,
+  "wave": 1,
+  "money": 658,
+  "player": {
+    "health": 95,
+    "max_health": 100,
+    "damage": 10,
+    "speed": 4,
+    "shoot_delay": 20,
+    "reload_time": 2.0,
+    "magazine_size": 30,
+    "current_ammo": 5,
+    "medkits": 0,
+    "facing_right": true,
+    "ammo_capacity_bought": false,
+    "skin_path": "assets/images/pixel_pers_static.png"
+  },
+  "timestamp": "2025-07-12T15:43:01.443798"
+}

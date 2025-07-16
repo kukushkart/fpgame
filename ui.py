@@ -31,8 +31,8 @@ def draw_menu(screen, buttons):
     if not pygame.font.get_init():
         pygame.font.init()
     title_font = pygame.font.Font(FONT_NAME, FONT_SIZE + 20)
-    title_text = title_font.render("Zombie Survival", True, WHITE)
-    title_shadow = title_font.render("Zombie Survival", True, BLACK)
+    title_text = title_font.render("Last Breath", True, WHITE)
+    title_shadow = title_font.render("Last Breath", True, BLACK)
     title_x = SCREEN_WIDTH // 2 - title_text.get_width() // 2
     title_y = 100
     screen.blit(title_shadow, (title_x + 3, title_y + 3))

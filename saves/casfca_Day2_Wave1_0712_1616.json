@@ -1,0 +1,22 @@
+{
+  "save_name": "casfca_Day2_Wave1_0712_1616",
+  "player_name": "casfca",
+  "day": 2,
+  "wave": 1,
+  "money": 664,
+  "player": {
+    "health": 68,
+    "max_health": 100,
+    "damage": 10,
+    "speed": 4,
+    "shoot_delay": 20,
+    "reload_time": 2.0,
+    "magazine_size": 30,
+    "current_ammo": 7,
+    "medkits": 0,
+    "facing_right": true,
+    "ammo_capacity_bought": false,
+    "skin_path": "assets/images/pixel_pers_static.png"
+  },
+  "timestamp": "2025-07-12T16:16:45.500048"
+}

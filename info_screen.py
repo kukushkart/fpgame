@@ -55,7 +55,6 @@ class InfoScreen:
                 "SHIFT - change direction",
                 "H - use medkit",
                 "R - reload weapon",
-                "M - open upgrade menu"
             ],
             "about_game": [
                 "About Game:",
@@ -69,7 +68,7 @@ class InfoScreen:
                 "Paniavin Alexander",
                 "",
                 "Version 1.0",
-                "2025 Zombie Survival Game"
+                "2025 Last Breath Game"
             ]
         }
     def run(self):

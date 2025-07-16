@@ -12,7 +12,7 @@ class PauseMenu:
         button_height = 60
         center_x = SCREEN_WIDTH // 2 - button_width // 2
         self.buttons = [
-            Button(center_x, SCREEN_HEIGHT // 2 - 80, button_width, button_height, "Return to game", GREEN,
+            Button(center_x, SCREEN_HEIGHT // 2 - 80, button_width, button_height, "Return to the game", GREEN,
                    (150, 255, 150)),
             Button(center_x, SCREEN_HEIGHT // 2 + 20, button_width, button_height, "Exit", RED, (255, 150, 150)),
         ]
@@ -33,7 +33,7 @@ class PauseMenu:
             for button in self.buttons:
                 button.check_hover(mouse_pos)
                 if button.is_clicked(mouse_pos, mouse_click):
-                    if button.text == "Return to game":
+                    if button.text == "Return to the game":
                         return "resume"
                     elif button.text == "Exit":
                         return "quit"
