@@ -1,0 +1,22 @@
+{
+  "save_name": "sss",
+  "player_name": "ohvsxia",
+  "day": 2,
+  "wave": 1,
+  "money": 169,
+  "player": {
+    "health": 90,
+    "max_health": 100,
+    "damage": 15,
+    "speed": 4,
+    "shoot_delay": 18,
+    "reload_time": 2.0,
+    "magazine_size": 30,
+    "current_ammo": 1,
+    "medkits": 0,
+    "facing_right": true,
+    "ammo_capacity_bought": false,
+    "skin_path": "assets/images/pixel_pers_static.png"
+  },
+  "timestamp": "2025-07-17T00:41:12.228401"
+}

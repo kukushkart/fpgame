@@ -19,7 +19,7 @@ class InfoScreen:
             {"image": "гт2пр.png", "name": "Blue zombie", "description": "Smart zombie\n.Large Detection Radius, Medium speed and health\nMedium damage."},
             {"image": "к2пр.png", "name": "Red zombie", "description": "Strong zombie.\nLess speed, more health.\nMedium damage."},
             {"image": "ф2пр.png", "name": "Purple zombie", "description": "Strong zombie\nLess speed, more health.\nMedium damage."},
-            {"image": "ц2пр.png", "name": "Cyan zombie", "description": "Smart zombie\n.Large Detection Radius, Medium speed and health\nMedium damage."},
+            {"image": "ц2пр.png", "name": "Cyan zombie", "description": "Smart zombie.\nLarge Detection Radius, Medium speed and health\nMedium damage."},
             {"image": "шл2пр.png", "name": "Zombie with a hat", "description": "Fast zombie.\nMore speed, less health.\nMaximum damage."}
         ]
         self.zombie_images = {}
