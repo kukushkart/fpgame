@@ -1,0 +1,22 @@
+{
+  "save_name": "2222222222287_Day3_Wave1_0711_1742",
+  "player_name": "2222222222287",
+  "day": 3,
+  "wave": 1,
+  "money": 352,
+  "player": {
+    "health": 5,
+    "max_health": 100,
+    "damage": 15,
+    "speed": 4,
+    "shoot_delay": 20,
+    "reload_time": 2.0,
+    "magazine_size": 45,
+    "current_ammo": 5,
+    "medkits": 1,
+    "facing_right": false,
+    "ammo_capacity_bought": true,
+    "skin_path": "assets/images/pixel_pers_static.png"
+  },
+  "timestamp": "2025-07-11T17:42:31.946381"
+}

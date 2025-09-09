@@ -1,0 +1,22 @@
+{
+  "save_name": "pasha",
+  "player_name": "pasha",
+  "day": 2,
+  "wave": 1,
+  "money": 182,
+  "player": {
+    "health": 93,
+    "max_health": 100,
+    "damage": 15,
+    "speed": 4,
+    "shoot_delay": 18,
+    "reload_time": 2.0,
+    "magazine_size": 30,
+    "current_ammo": 3,
+    "medkits": 0,
+    "facing_right": true,
+    "ammo_capacity_bought": false,
+    "skin_path": "assets/images/pixel_pers_static.png"
+  },
+  "timestamp": "2025-07-11T17:37:25.471404"
+}
