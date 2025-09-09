@@ -7,6 +7,7 @@ class BlueZombie(AnimatedZombie):
     DETECTION_RADIUS = 800
     DAMAGE = 6
     REWARD = 15
+
     FRAMES = [
         "assets/images/гт1ле.png",
         "assets/images/гт2ле.png",
@@ -18,6 +19,7 @@ class BlueZombie(AnimatedZombie):
          "assets/images/гт3пр.png",
      ]
     FRAME_TIME = 0.12
+
 class GreenZombie(AnimatedZombie):
     BASE_SPEED_RANGE = (2, 3)
     SPEED_PER_DAY = 0.3
@@ -37,6 +39,7 @@ class GreenZombie(AnimatedZombie):
          "assets/images/з3пр.png",
      ]
     FRAME_TIME = 0.12
+
 class PurpleZombie(AnimatedZombie):
     BASE_SPEED_RANGE = (1, 2)
     SPEED_PER_DAY = 0.7
@@ -56,6 +59,7 @@ class PurpleZombie(AnimatedZombie):
          "assets/images/ф3пр.png",
      ]
     FRAME_TIME = 0.12
+
 class RedZombie(AnimatedZombie):
     BASE_SPEED_RANGE = (1, 2)
     SPEED_PER_DAY = 0.7
@@ -75,6 +79,7 @@ class RedZombie(AnimatedZombie):
          "assets/images/к3пр.png",
      ]
     FRAME_TIME = 0.12
+
 class LimeZombie(AnimatedZombie):
     BASE_SPEED_RANGE = (2, 3)
     SPEED_PER_DAY = 0.3
@@ -94,6 +99,7 @@ class LimeZombie(AnimatedZombie):
          "assets/images/с3пр.png",
      ]
     FRAME_TIME = 0.12
+
 class HatZombie(AnimatedZombie):
     BASE_SPEED_RANGE = (3, 4)
     SPEED_PER_DAY = 0.8
@@ -113,6 +119,7 @@ class HatZombie(AnimatedZombie):
          "assets/images/шл3пр.png",
      ]
     FRAME_TIME = 0.12
+
 class CyanZombie(AnimatedZombie):
     BASE_SPEED_RANGE = (3, 4)
     SPEED_PER_DAY = 0.6
@@ -132,6 +139,7 @@ class CyanZombie(AnimatedZombie):
          "assets/images/ц3пр.png",
      ]
     FRAME_TIME = 0.12
+
 class VioletZombie(AnimatedZombie):
     BASE_SPEED_RANGE = (1, 2)
     SPEED_PER_DAY = 0.7

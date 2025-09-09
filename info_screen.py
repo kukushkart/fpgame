@@ -51,15 +51,15 @@ class InfoScreen:
                 "",
                 "WASD or arrows - movement",
                 "Space - shooting",
-                "ESC/p - pause",
+                "ESC\p - pause",
                 "SHIFT - change direction",
                 "H - use medkit",
-                "R - reload weapon",
+                "R - reload weapon"
             ],
             "about_game": [
                 "About Game:",
                 "",
-                "Information about the game will be added here..."
+                "Hru hru hru hru hru"
             ],
             "authors": [
                 "Authors:",
