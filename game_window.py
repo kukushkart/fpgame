@@ -8,7 +8,7 @@ from pause_menu import PauseMenu
 from ui import Button
 from upgrade_menu import UpgradeMenu
 from records_menu import RecordsScreen
-from wave_manager import WAVES_CONFIG
+from wave_manager import WAVES_CONFIG, get_wave_config
 from custom_zombies import BlueZombie, GreenZombie, RedZombie, PurpleZombie, HatZombie, VioletZombie, LimeZombie, CyanZombie
 from save_manager import SaveManager
 class BloodEffect:
@@ -70,7 +70,8 @@ class GameWindow:
         self.zombies_to_spawn = 0
         self.wave_timer = 0.0
         self.day_completed = False
-        self.waves = WAVES_CONFIG.get(self.day, [])
+        self.waves = get_wave_config(self.day)
+        self.current_wave_info = None
         self.spawn_interval = 1.0
         self.save_manager = SaveManager()
     def load_background(self):
@@ -134,7 +135,7 @@ class GameWindow:
         self.zombies_to_spawn = 0
         self.wave_timer = 0.0
         self.day_completed = False
-        self.waves = WAVES_CONFIG.get(self.day, [])
+        self.waves = get_wave_config(self.day)
     def load_game_state(self, filename=None):
         if filename:
             save_data = self.save_manager.load_save_by_filename(filename)
@@ -162,11 +163,12 @@ class GameWindow:
             self.player.facing_right = player_data.get("facing_right", True)
             self.player.ammo_capacity_bought = player_data.get("ammo_capacity_bought", False)
             self.player.image = self.player.image_right if self.player.facing_right else self.player.image_left
-            self.waves = WAVES_CONFIG.get(self.day, [])
+            self.waves = get_wave_config(self.day)
             self.current_wave = 0
             self.zombies_to_spawn = 0
             self.wave_timer = 0.0
             self.day_completed = False
+            self.current_wave_info = None
             self.zombies = []
             self.dying_zombies = []
             self.blood_effects = []
@@ -187,18 +189,29 @@ class GameWindow:
     def spawn_and_update_zombies(self, dt):
         if self.day_completed or self.game_over:
             return
-        ZombieClass = random.choice([BlueZombie, GreenZombie, RedZombie, PurpleZombie, HatZombie, VioletZombie, LimeZombie, CyanZombie])
+            
+        # Начинаем новую волну
         if len(self.zombies) == 0 and self.zombies_to_spawn == 0 and self.current_wave < len(self.waves):
             self.wave_timer += dt
             wave = self.waves[self.current_wave]
             if self.wave_timer >= wave["delay"]:
                 self.zombies_to_spawn = wave["zombie_count"]
+                self.current_wave_info = wave  # Сохраняем информацию о текущей волне
                 self.wave_timer = 0.0
                 self.current_wave += 1
                 self.wave = self.current_wave
+                
+        # Спавн зомби
         if self.zombies_to_spawn > 0:
             self.zombie_spawn_timer += dt
             if self.zombie_spawn_timer >= self.spawn_interval:
+                # Выбираем тип зомби на основе типа волны
+                if self.current_wave_info and "zombie_types" in self.current_wave_info:
+                    ZombieClass = random.choice(self.current_wave_info["zombie_types"])
+                else:
+                    # Обратная совместимость со старыми сохранениями
+                    ZombieClass = random.choice([BlueZombie, GreenZombie, RedZombie, PurpleZombie, HatZombie, VioletZombie, LimeZombie, CyanZombie])
+                    
                 self.zombies.append(ZombieClass(self.screen, self.day))
                 self.zombies_to_spawn -= 1
                 self.zombie_spawn_timer = 0.0
@@ -238,8 +251,23 @@ class GameWindow:
                             self.dying_zombies.append((z, eff))
                         self.zombies.remove(z)
                         base_reward = getattr(z.__class__, 'REWARD', 10)  
-                        day_bonus = 5 * (self.day - 1)
-                        self.money += base_reward + day_bonus
+                        # Новая формула: менее агрессивный рост наград
+                        # День 1: +0, День 2: +2, День 3: +4, День 4: +6, День 5: +8, День 6: +10
+                        day_bonus = 2 * (self.day - 1)
+                        # Дополнительный бонус основанный на типе волны
+                        wave_bonus = 0
+                        if self.current_wave_info and "type" in self.current_wave_info:
+                            wave_type = self.current_wave_info["type"]
+                            wave_bonuses = {
+                                "boss": 3,    # Больше денег за сильных зомби
+                                "swarm": -1,  # Меньше денег за слабых зомби
+                                "normal": 0,  # Стандартно
+                                "mixed": 1    # Небольшой бонус
+                            }
+                            wave_bonus = wave_bonuses.get(wave_type, 0)
+                        
+                        total_reward = base_reward + day_bonus + wave_bonus
+                        self.money += max(total_reward, 5)  # Минимум 5$ за зомби
                     break
     def update(self, dt):
         if not self.game_paused and not self.game_over:
@@ -297,6 +325,27 @@ class GameWindow:
         wave_text = day_wave_font.render(f"Wave: {self.wave}", True, WHITE)
         self.screen.blit(day_text, (SCREEN_WIDTH // 2 - day_text.get_width() // 2, 20))
         self.screen.blit(wave_text, (SCREEN_WIDTH // 2 - wave_text.get_width() // 2, 90))
+        
+        # Отображение типа волны
+        if self.current_wave_info and "type" in self.current_wave_info:
+            wave_type = self.current_wave_info["type"]
+            type_colors = {
+                "normal": (200, 200, 200),      # Серый
+                "swarm": (255, 255, 100),       # Желтый
+                "boss": (255, 100, 100),        # Красный
+                "mixed": (150, 255, 150)        # Зеленый
+            }
+            type_names = {
+                "normal": "Normal",
+                "swarm": "Swarm", 
+                "boss": "Boss",
+                "mixed": "Mixed"
+            }
+            wave_type_font = pygame.font.Font(FONT_NAME, 25)
+            color = type_colors.get(wave_type, WHITE)
+            type_name = type_names.get(wave_type, wave_type.title())
+            type_text = wave_type_font.render(f"Type: {type_name}", True, color)
+            self.screen.blit(type_text, (SCREEN_WIDTH // 2 - type_text.get_width() // 2, 135))
         money_font = pygame.font.Font(FONT_NAME, 35)
         money_text = money_font.render(f"Money: {self.money}$", True, (255, 215, 0))
         self.screen.blit(money_text, (SCREEN_WIDTH - money_text.get_width() - 20, 20))
@@ -342,7 +391,8 @@ class GameWindow:
                     self.zombies_to_spawn = 0
                     self.wave_timer = 0.0
                     self.day_completed = False
-                    self.waves = WAVES_CONFIG.get(self.day, [])
+                    self.waves = get_wave_config(self.day)
+                    self.current_wave_info = None
                     self.zombies = []
                 if not self.show_upgrade_menu():
                     break
